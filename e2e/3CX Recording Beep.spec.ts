@@ -56,7 +56,7 @@ test('test', async ({ page, request }) => {
   await page.getByRole('row', { name: 'HOL Beep test' }).getByRole('cell').first().click();
   await page.getByRole('row', { name: 'HOL Beep test' }).locator('#chkcheckbox').check();
   await page.getByRole('row', { name: '8003 Wallbord' }).locator('#chkcheckbox').check();
-  await page.getByRole('row', { name: '8016 recording Beep' }).locator('#chkcheckbox').check();
+  await page.getByRole('row', { name: '8016 ording Beep' }).locator('#chkcheckbox').check();
   await page.locator('.row > div:nth-child(2)').click();
   await page.getByLabel('Logout').click();
   await page.getByLabel('Logout').click();
