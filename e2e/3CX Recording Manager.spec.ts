@@ -134,23 +134,21 @@ try {
       return pctText;
     },
     {
-      timeout: 3000000,
-      intervals: [200000],
+      timeout: 300000,
+      intervals: [1000],
     }
   )
   .toMatch(/100\s*%/);
 
  console.log("✅ Sync reached 100%");
 
-// ─── WAIT FOR STOP BUTTON TO REVERT ────────────────────────
-  await expect(stopButton).toBeHidden({ timeout: 600000 });
-  console.log('✅ Import finished');
-
-// "Import" is highlighted/active in the sidebar
-    const importLink = page.getByText('Import', { exact: true });
-    await expect(importLink).toHaveClass(/active|selected/i).catch(async () => {
-      console.log('ℹ️ Import link is not marked active');
-    });
+// Validate success popup appears
+  await expect(page.getByText('Success')).toBeVisible({ timeout: 10000 });
+  await expect(page.getByText('Import Completed Successfully')).toBeVisible();
+  
+// Click OK and confirm popup closes
+  await page.getByRole('button', { name: 'OK' }).click();
+  await expect(page.getByText('Import Completed Successfully')).not.toBeVisible();
 
 // Fallback: at least confirm it's the current page via URL
   await expect(page).toHaveURL(/import/i);
