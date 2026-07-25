@@ -27,8 +27,8 @@ test('test', async ({ page, request }) => {
   await page.locator('#MainContent_rpAD_btnSaveCreds_CD').click();
   await page.getByRole('cell', { name: 'OK OK' }).locator('span').click();
   await page.locator('#MainContent_rpAD_chkArchiveRecordings_S_D').click();
-  await page.locator('#MainContent_rpAD_CRC > table > tbody > tr > td:nth-child(2)').click();
-  await page.locator('#MainContent_rpAD_CRC > table > tbody > tr > td:nth-child(2)').click();
+  await page.locator('#MainContent_rpAD_CRC').getByRole('cell').nth(1).click();
+  await page.locator('#MainContent_rpAD_CRC').getByRole('cell').nth(1).click();
   await page.locator('#MainContent_rpAD_chkArchiveRecordings_S_D').click();
   await page.locator('#MainContent_rpSettings_cbAddExtFromAD_S_D').click();
   await page.locator('#MainContent_rpSettings_cbAddExtFromAD_S_D').click();

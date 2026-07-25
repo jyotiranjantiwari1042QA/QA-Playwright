@@ -1,6 +1,5 @@
 import { TIMEOUT } from "dns";
-
-const { test, expect } = require('@playwright/test');
+import { test, expect } from '@playwright/test';
 
 test('Auto logout', async ({ page }) => {
   // Test code goes here
@@ -52,7 +51,7 @@ test('Auto logout', async ({ page }) => {
   await page.getByRole('button', { name: 'Register' }).click();
   
   // Wait for a specific selector to appear
-  await page.waitForSelector('button',{name: 'OK'});
+  await page.waitForSelector('button:has-text("OK")');
   await page.getByRole('button', { name: 'OK' }).click();
 
   // Navigate to Email page
@@ -61,21 +60,14 @@ test('Auto logout', async ({ page }) => {
   await page.locator('.mud-input-slot').first().click();
   await page.locator('.mud-input-slot').first().click();
   await page.locator('.mud-input-slot').first().fill('smtp.office365.com');
-  await page.locator('div:nth-child(3) > .mud-input-control-input-container > .mud-input > input').click();
-  await page.locator('div:nth-child(3) > .mud-input-control-input-container > .mud-input > input').fill('587');
+  await page.getByLabel('Port').click();
+  await page.getByLabel('Port').fill('587');
   await page.locator('div:nth-child(4) > .mud-input-control-input-container > .mud-input > input').click();
   await page.locator('div:nth-child(4) > .mud-input-control-input-container > .mud-input > input').click();
   await page.locator('div:nth-child(4) > .mud-input-control-input-container > .mud-input > input').click();
   await page.locator('div:nth-child(4) > .mud-input-control-input-container > .mud-input > input').fill('mail@voiptools.com');
-  await page.locator('div:nth-child(5) > .mud-input-control-input-container > .mud-input > input').click();
-  await page.locator('div:nth-child(5) > .mud-input-control-input-container > .mud-input > input').press('CapsLock');
-  await page.locator('div:nth-child(5) > .mud-input-control-input-container > .mud-input > input').fill('L');
-  await page.locator('div:nth-child(5) > .mud-input-control-input-container > .mud-input > input').press('CapsLock');
-  await page.locator('div:nth-child(5) > .mud-input-control-input-container > .mud-input > input').fill('Logout from ');
-  await page.locator('div:nth-child(5) > .mud-input-control-input-container > .mud-input > input').press('CapsLock');
-  await page.locator('div:nth-child(5) > .mud-input-control-input-container > .mud-input > input').fill('Logout from Q');
-  await page.locator('div:nth-child(5) > .mud-input-control-input-container > .mud-input > input').press('CapsLock');
-  await page.locator('div:nth-child(5) > .mud-input-control-input-container > .mud-input > input').fill('Logout from Queue');
+  await page.getByLabel('Subject').click();
+  await page.getByLabel('Subject').fill('Logout from Queue');
   await page.locator('div:nth-child(6) > .mud-input-control-input-container > .mud-input > input').click();
   await page.locator('div:nth-child(6) > .mud-input-control-input-container > .mud-input > input').press('CapsLock');
   await page.locator('div:nth-child(6) > .mud-input-control-input-container > .mud-input > input').fill('J');
@@ -92,7 +84,7 @@ test('Auto logout', async ({ page }) => {
   await page.getByRole('button', { name: 'Test' }).click();
 
   // Wait for a specific selector to appear
-  await page.waitForSelector('button',{name: 'OK'});
+  await page.waitForSelector('button:has-text("OK")');
   await page.getByRole('button', { name: 'OK' }).click();
 
   // Navigate to Setting page

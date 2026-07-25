@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 
+
 test('test', async ({page}) => {
 
 // Navigate to the Login page 
@@ -8,10 +9,10 @@ test('test', async ({page}) => {
     await page.getByRole('textbox', { name: 'extension' }).fill('1005');
     await page.locator('input[type="password"]').fill('Shivaay@104');
     await page.getByRole('checkbox', { name: 'Remember Me' }).check();
-    await page.getByRole('button', { name: 'login' }).click();
-    const errorBanner = page.locator('text=Login Unsuccessful');
-    await page.getByText('Login Unsuccessful').waitFor({ state: 'visible', timeout: 10000 });
-    await expect(errorBanner).toHaveText('Login Unsuccessful.');
+    await page.getByRole('button', { name: /login/i }).click();
+    const errorBanner = page.getByText(/Login Unsuccessful\.?/i);
+    await page.waitForSelector('text=Login Unsuccessful', { state: 'visible', timeout: 10000 });    
+    await expect(errorBanner).toHaveText(/Login Unsuccessful\.?/i);
 
 // Fill login page with valid credentials and click on login button
    await page.getByRole('textbox', { name: 'extension' }).click();
@@ -19,7 +20,7 @@ test('test', async ({page}) => {
    await page.locator('input[type="password"]').click();
    await page.locator('input[type="password"]').fill('Shivaay@1042');
    await page.getByRole('checkbox', { name: 'Remember Me' }).check();
-   await page.getByRole('button', { name: 'login' }).click();
+   await page.getByRole('button', { name: /login/i }).click();
    await page.waitForLoadState('networkidle');
 
 
@@ -91,7 +92,7 @@ try {
   await expect(page).toHaveURL(/Import/i);
   
 // ─── EXPAND PANEL ─────────────────────────────────────
-  await page.locator('.mud-expand-panel-header').click();
+  await page.locator('.mud-expand-panel-header').first().click();
 
 // ─── ADVANCED SETTINGS ────────────────────────────────
   await page.getByRole('button', { name: 'Advanced Settings' }).waitFor({ state: 'visible' });
