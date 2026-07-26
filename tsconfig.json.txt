@@ -14,8 +14,8 @@
     "noEmit": true
   },
   "include": [
-    "tests/**/*.ts",
-    "tests/**/*.js",
+    "E2E/**/*.ts",
+    "E2E/**/*.js",
     "playwright.config.ts"
   ],
   "exclude": [
