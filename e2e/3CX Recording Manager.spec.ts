@@ -1,7 +1,5 @@
 import { test, expect } from '@playwright/test';
 
-
-
 test('test', async ({page}) => {
 
 // Navigate to the Login page 
