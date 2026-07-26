@@ -41,8 +41,11 @@ try {
   console.log('ℹ️ Popup not found — skipping to Recordings');
 }
 // ✅ Always open Recordings page regardless
+const recordingsLink = page.locator('a, button').filter({ hasText: /recordings/i }).first();
 try {
-  await page.getByRole('link', { name: /Recordings/i }).click();
+  await recordingsLink.waitFor({ state: 'visible', timeout: 20000 });
+  await recordingsLink.scrollIntoViewIfNeeded();
+  await recordingsLink.click();
   await page.waitForURL(/Recordings/i, { timeout: 15000 });
   console.log('✅ Recordings page —', page.url());
 } catch { console.log('❌ Recordings not found'); }
@@ -84,7 +87,9 @@ try {
 } catch { console.log('❌ Settings not found'); }
 
 // ─── NAVIGATE TO IMPORT ───────────────────────────────
-  await page.getByRole('link', { name: /Recordings/i }).click();
+  await recordingsLink.waitFor({ state: 'visible', timeout: 20000 });
+  await recordingsLink.scrollIntoViewIfNeeded();
+  await recordingsLink.click();
   await expect(page).toHaveURL(/Recordings/i);
 
   await page.getByRole('link', { name: /Import/i }).click();
