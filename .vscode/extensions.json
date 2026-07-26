@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "ms-playwright.playwright"
+  ],
+  "unwantedRecommendations": [
+    "gupei.neo-playwright",
+    "csbun.playwright-extend",
+    "jaktestowac-pl.playwright-helpers",
+    "vscode.mermaid-markdown-features"
+  ]
+}

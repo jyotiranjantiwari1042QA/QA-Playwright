@@ -62,21 +62,12 @@ test('Auto logout', async ({ page }) => {
   await page.locator('.mud-input-slot').first().fill('smtp.office365.com');
   await page.getByLabel('Port').click();
   await page.getByLabel('Port').fill('587');
-  await page.locator('div:nth-child(4) > .mud-input-control-input-container > .mud-input > input').click();
-  await page.locator('div:nth-child(4) > .mud-input-control-input-container > .mud-input > input').click();
-  await page.locator('div:nth-child(4) > .mud-input-control-input-container > .mud-input > input').click();
-  await page.locator('div:nth-child(4) > .mud-input-control-input-container > .mud-input > input').fill('mail@voiptools.com');
+  await page.locator('input[type="email"]').nth(0).fill('mail@voiptools.com');
   await page.getByLabel('Subject').click();
   await page.getByLabel('Subject').fill('Logout from Queue');
-  await page.locator('div:nth-child(6) > .mud-input-control-input-container > .mud-input > input').click();
-  await page.locator('div:nth-child(6) > .mud-input-control-input-container > .mud-input > input').press('CapsLock');
-  await page.locator('div:nth-child(6) > .mud-input-control-input-container > .mud-input > input').fill('J');
-  await page.locator('div:nth-child(6) > .mud-input-control-input-container > .mud-input > input').press('CapsLock');
-  await page.locator('div:nth-child(6) > .mud-input-control-input-container > .mud-input > input').fill('jyoti.ranjan@voiptools.com');
+  await page.locator('input[type="email"]').nth(1).fill('jyoti.ranjan@voiptools.com');
   await page.getByLabel('Requires Authentication').check();
-  await page.locator('div:nth-child(8) > .mud-input-control-input-container > .mud-input > input').click();
-  await page.locator('div:nth-child(8) > .mud-input-control-input-container > .mud-input > input').click();
-  await page.locator('div:nth-child(8) > .mud-input-control-input-container > .mud-input > input').fill('mail@voiptools.com');
+  await page.locator('input[type="email"]').nth(2).fill('mail@voiptools.com');
   await page.locator('input[type="password"]').click();
   await page.locator('input[type="password"]').click();
   await page.locator('input[type="password"]').fill('/.r%`oVaCxx*Li4m;,');
@@ -90,9 +81,8 @@ test('Auto logout', async ({ page }) => {
   // Navigate to Setting page
   await page.getByRole('link', { name: 'Setting' }).click();
   await page.getByRole('textbox').first().click();
-  await page.locator('.mud-input-numeric-spin > button').first().click({
-    clickCount: 2
-  });
+  await page.getByRole('spinbutton').first().press('ArrowUp');
+  await page.getByRole('spinbutton').first().press('ArrowUp');
 
   // Select the radio button
   await page.getByRole('radio', { name: 'Logout', exact: true }).check();
@@ -111,11 +101,10 @@ test('Auto logout', async ({ page }) => {
   await page.getByRole('row', { name: 'Autologout' }).getByLabel('').check();     // Perform the check action
 
  // Click on the element with the label text "Open Time Picker"
-  await page.getByLabel('Open Time Picker');
   await page.getByLabel('Open Time Picker').click();
   await page.getByRole('button', { name: 'PM' }).click();
-  await page.locator('.mud-picker-stick').first().click();
-  await page.locator('div:nth-child(43)').click();
+  await page.locator('.mud-picker-stick').nth(0).click();
+  await page.locator('.mud-picker-stick').nth(0).locator('div').nth(42).click();
   await page.getByRole('button', { name: 'Logout' }).click();
 
 });

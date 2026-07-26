@@ -78,8 +78,8 @@ try {
 
 // Settings
 try {
-  await page.locator('text=Settings').scrollIntoViewIfNeeded();
-  await page.locator('text=Settings').click();
+  await page.getByText('Settings').scrollIntoViewIfNeeded();
+  await page.getByText('Settings').click();
   await page.waitForURL(/Settings/i, { timeout: 15000 });
   console.log('✅ Settings page —', page.url());
 } catch { console.log('❌ Settings not found'); }

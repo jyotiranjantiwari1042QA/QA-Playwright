@@ -283,7 +283,7 @@ test.describe('Clear completed button', () => {
   });
 
   test('should display the correct text', async ({ page }) => {
-    await page.locator('.todo-list li .toggle').first().check();
+    await page.getByTestId('todo-item').first().getByRole('checkbox').check();
     await expect(page.getByRole('button', { name: 'Clear completed' })).toBeVisible();
   });
 
@@ -296,7 +296,7 @@ test.describe('Clear completed button', () => {
   });
 
   test('should be hidden when there are no items that are completed', async ({ page }) => {
-    await page.locator('.todo-list li .toggle').first().check();
+    await page.getByTestId('todo-item').first().getByRole('checkbox').check();
     await page.getByRole('button', { name: 'Clear completed' }).click();
     await expect(page.getByRole('button', { name: 'Clear completed' })).toBeHidden();
   });
@@ -408,6 +408,9 @@ test.describe('Routing', () => {
   });
 });
 
+/**
+ * @param {import('@playwright/test').Page} page
+ */
 async function createDefaultTodos(page) {
   // create a new todo locator
   const newTodo = page.getByPlaceholder('What needs to be done?');
@@ -434,7 +437,8 @@ async function createDefaultTodos(page) {
  */
  async function checkNumberOfCompletedTodosInLocalStorage(page, expected) {
   return await page.waitForFunction(e => {
-    return JSON.parse(localStorage['react-todos']).filter(i => i.completed).length === e;
+    const todos = /** @type {{completed:boolean}[]} */ (JSON.parse(localStorage['react-todos']));
+    return todos.filter(i => i.completed).length === e;
   }, expected);
 }
 
@@ -444,6 +448,7 @@ async function createDefaultTodos(page) {
  */
 async function checkTodosInLocalStorage(page, title) {
   return await page.waitForFunction(t => {
-    return JSON.parse(localStorage['react-todos']).map(i => i.title).includes(t);
+    const todos = /** @type {{title:string}[]} */ (JSON.parse(localStorage['react-todos']));
+    return todos.map(i => i.title).includes(t);
   }, title);
 }

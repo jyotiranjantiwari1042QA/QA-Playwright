@@ -1,6 +1,5 @@
 import { TIMEOUT } from "dns";
-
-const { test, expect } = require('@playwright/test');
+import { test, expect } from '@playwright/test';
 
 test('Setup Competitive Wallboard', async ({ page }) => {
    // Test code goes here
@@ -68,102 +67,16 @@ test('Setup Competitive Wallboard', async ({ page }) => {
   await page.getByRole('link', { name: 'Agents' }).click();
   await page.locator('#chkAgent').check();
   await page.getByRole('row', { name: 'Add/Update Agents from 3CX:' }).getByRole('combobox').selectOption('Custom Presence Group');
-  await page.locator('tr:nth-child(2) > td:nth-child(4) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(4) > input').fill('0');
-  await page.locator('tr:nth-child(2) > td:nth-child(4) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(4) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(4) > input').fill('5');
-  await page.locator('tr:nth-child(2) > td:nth-child(4) > input').click({
-    clickCount: 4
-  });
-  await page.locator('tr:nth-child(2) > td:nth-child(5) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(5) > input').fill('0');
-  await page.locator('tr:nth-child(2) > td:nth-child(5) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(5) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(5) > input').fill('5');
-  await page.locator('tr:nth-child(2) > td:nth-child(5) > input').click({
-    clickCount: 4
-  });  
-  await page.locator('tr:nth-child(2) > td:nth-child(6) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(6) > input').fill('0');
-  await page.locator('tr:nth-child(2) > td:nth-child(6) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(6) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(6) > input').fill('5');
-  await page.locator('tr:nth-child(2) > td:nth-child(6) > input').click({
-    clickCount: 4
-  });  
-  await page.locator('tr:nth-child(2) > td:nth-child(7) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(7) > input').fill('0');
-  await page.locator('tr:nth-child(2) > td:nth-child(7) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(7) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(7) > input').fill('5');
-  await page.locator('tr:nth-child(2) > td:nth-child(7) > input').click({
-    clickCount: 4
-  });  
-  await page.locator('tr:nth-child(2) > td:nth-child(8) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(8) > input').fill('0');
-  await page.locator('tr:nth-child(2) > td:nth-child(8) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(8) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(8) > input').fill('5');
-  await page.locator('tr:nth-child(2) > td:nth-child(8) > input').click({
-    clickCount: 4
-  });  
-  await page.locator('tr:nth-child(2) > td:nth-child(9) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(9) > input').fill('0');
-  await page.locator('tr:nth-child(2) > td:nth-child(9) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(9) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(9) > input').fill('5');
-  await page.locator('tr:nth-child(2) > td:nth-child(9) > input').click({
-    clickCount: 4
-  });  
-  await page.locator('tr:nth-child(2) > td:nth-child(10) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(10) > input').fill('0');
-  await page.locator('tr:nth-child(2) > td:nth-child(10) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(10) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(10) > input').fill('5');
-  await page.locator('tr:nth-child(2) > td:nth-child(10) > input').click({
-    clickCount: 4
-  }); 
-  await page.locator('tr:nth-child(2) > td:nth-child(11) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(11) > input').fill('0');
-  await page.locator('tr:nth-child(2) > td:nth-child(11) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(11) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(11) > input').fill('5');
-  await page.locator('tr:nth-child(2) > td:nth-child(11) > input').click({
-    clickCount: 4
-  }); 
-  await page.locator('tr:nth-child(2) > td:nth-child(12) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(12) > input').fill('0');
-  await page.locator('tr:nth-child(2) > td:nth-child(12) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(12) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(12) > input').fill('5');
-  await page.locator('tr:nth-child(2) > td:nth-child(12) > input').click({
-    clickCount: 4
-  }); 
-  await page.locator('tr:nth-child(2) > td:nth-child(13) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(13) > input').fill('0');
-  await page.locator('tr:nth-child(2) > td:nth-child(13) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(13) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(13) > input').fill('5');
-  await page.locator('tr:nth-child(2) > td:nth-child(13) > input').click({
-    clickCount: 4
-  }); 
-  await page.locator('tr:nth-child(2) > td:nth-child(14) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(14) > input').fill('0');
-  await page.locator('tr:nth-child(2) > td:nth-child(14) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(14) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(14) > input').fill('5');
-  await page.locator('tr:nth-child(2) > td:nth-child(14) > input').click({
-    clickCount: 4
-  }); 
-  await page.locator('tr:nth-child(2) > td:nth-child(15) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(15) > input').fill('0');
-  await page.locator('tr:nth-child(2) > td:nth-child(15) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(15) > input').click();
-  await page.locator('tr:nth-child(2) > td:nth-child(15) > input').fill('5');
-  await page.locator('tr:nth-child(2) > td:nth-child(15) > input').click({
-    clickCount: 4
-  }); 
+  const setAgentInputValue = async (columnIndex: number, value: string) => {
+    const row = page.getByRole('row', { name: '1002 VoIPTools' });
+    const input = row.locator('td').nth(columnIndex - 1).locator('input');
+    await input.click();
+    await input.fill(value);
+  };
+
+  for (let column = 4; column <= 15; column++) {
+    await setAgentInputValue(column, '5');
+  }
   await page.getByRole('row', { name: '1002 VoIPTools' }).getByRole('combobox').selectOption('824-8243777_business-icon-establish-a-company-icon.png');
   await page.getByRole('link', { name: 'Wallboard' }).click();
   await page.waitForTimeout(7000);

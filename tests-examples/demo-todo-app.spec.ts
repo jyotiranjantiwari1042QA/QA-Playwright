@@ -283,7 +283,7 @@ test.describe('Clear completed button', () => {
   });
 
   test('should display the correct text', async ({ page }) => {
-    await page.locator('.todo-list li .toggle').first().check();
+    await page.getByTestId('todo-item').first().getByRole('checkbox').check();
     await expect(page.getByRole('button', { name: 'Clear completed' })).toBeVisible();
   });
 
@@ -296,8 +296,7 @@ test.describe('Clear completed button', () => {
   });
 
   test('should be hidden when there are no items that are completed', async ({ page }) => {
-    await page.locator('.todo-list li .toggle').first().check();
-    await page.getByRole('button', { name: 'Clear completed' }).click();
+    await page.getByTestId('todo-item').first().getByRole('checkbox').check();
     await expect(page.getByRole('button', { name: 'Clear completed' })).toBeHidden();
   });
 });

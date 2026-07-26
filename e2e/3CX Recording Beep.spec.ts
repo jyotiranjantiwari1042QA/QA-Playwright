@@ -57,7 +57,7 @@ test('test', async ({ page, request }) => {
   await page.getByRole('row', { name: 'HOL Beep test' }).locator('#chkcheckbox').check();
   await page.getByRole('row', { name: '8003 Wallbord' }).locator('#chkcheckbox').check();
   await page.getByRole('row', { name: '8016 ording Beep' }).locator('#chkcheckbox').check();
-  await page.locator('.row > div:nth-child(2)').click();
+  await page.getByRole('button', { name: 'Save' }).click();
   await page.getByLabel('Logout').click();
   await page.getByLabel('Logout').click();
   await page.goto('https://voiptoolswindowsdev03.my3cx.us:5001/webclient');
