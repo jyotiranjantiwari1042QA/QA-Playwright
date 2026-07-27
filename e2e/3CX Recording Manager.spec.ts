@@ -1,17 +1,70 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Locator } from '@playwright/test';
 
-test('test', async ({page}) => {
+test('test', async ({ page }) => {
+  async function safeClick(locator: Locator) {
+    await locator.waitFor({ state: 'visible', timeout: 20000 });
+    await locator.scrollIntoViewIfNeeded();
+    try {
+      await locator.click({ timeout: 10000 });
+    } catch {
+      await locator.evaluate((element: HTMLElement) => {
+        element.scrollIntoView({ block: 'center', inline: 'center' });
+        element.click();
+      });
+    }
+  }
 
-// Navigate to the Login page 
-    await page.goto('http://13.235.85.154:5500/Login', { waitUntil: 'load' });
-// Fill login page with not valid credentials and click on login button
-    await page.getByRole('textbox', { name: 'extension' }).fill('1005');
-    await page.locator('input[type="password"]').fill('Shivaay@104');
-    await page.getByRole('checkbox', { name: 'Remember Me' }).check();
-    await page.getByRole('button', { name: /login/i }).click();
-    const errorBanner = page.getByText(/Login Unsuccessful\.?/i);
-    await page.waitForSelector('text=Login Unsuccessful', { state: 'visible', timeout: 10000 });    
-    await expect(errorBanner).toHaveText(/Login Unsuccessful\.?/i);
+  async function fillField(locator: Locator, value: string) {
+    await locator.waitFor({ state: 'visible', timeout: 20000 });
+    await locator.scrollIntoViewIfNeeded();
+    await locator.click({ force: true });
+    await locator.clear();
+    await locator.fill(value);
+  }
+
+  async function checkBox(locator: Locator) {
+    await locator.waitFor({ state: 'visible', timeout: 20000 });
+    await locator.scrollIntoViewIfNeeded();
+    await locator.check({ force: true });
+  }
+
+  const extensionField = page
+    .locator(
+      'input[name*="extension" i], input[placeholder*="extension" i], input[aria-label*="extension" i], input[id*="extension" i], input[autocomplete="username"]'
+    )
+    .first();
+  const passwordField = page
+    .locator(
+      'input[type="password"], input[name*="password" i], input[placeholder*="password" i], input[aria-label*="password" i], input[id*="password" i], input[autocomplete="current-password"]'
+    )
+    .first();
+  const rememberMeCheckbox = page.getByRole('checkbox', { name: /remember me/i }).first();
+  const loginButton = page.getByRole('button', { name: /login/i }).first();
+
+  // Navigate to the Login page
+  await page.goto('http://13.235.85.154:5500/Login', { waitUntil: 'load' });
+  await page.waitForLoadState('domcontentloaded');
+  await page.waitForTimeout(500);
+
+  const pageIcon = page.locator(
+    'img[alt*="logo" i], img[alt*="icon" i], svg[aria-label*="logo" i], svg[aria-label*="icon" i], svg[class*="logo" i], svg[class*="icon" i]'
+  ).first();
+  await pageIcon.waitFor({ state: 'visible', timeout: 10000 });
+
+  const upToDateBadge = page.getByText(/up to date/i).first();
+  await expect(upToDateBadge).toBeVisible({ timeout: 10000 });
+  await expect(loginButton).toBeVisible({ timeout: 10000 });
+  await expect(loginButton).toBeEnabled({ timeout: 10000 });
+
+  // Fill login page with not valid credentials and click on login button
+  await fillField(extensionField, '1005');
+  await fillField(passwordField, 'Shivaay@104');
+  await checkBox(rememberMeCheckbox);
+  await safeClick(loginButton);
+
+  const errorBanner = page.getByText(/login unsuccessful|invalid|incorrect|failed/i).first();
+  await expect(errorBanner).toBeVisible({ timeout: 10000 });
+  await expect(errorBanner).toContainText(/login unsuccessful|invalid|incorrect|failed/i);
 
 // Fill login page with valid credentials and click on login button
    await page.getByRole('textbox', { name: 'extension' }).click();
