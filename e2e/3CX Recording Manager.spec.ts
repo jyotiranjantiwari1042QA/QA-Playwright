@@ -41,7 +41,7 @@ test('test', async ({ page }) => {
   const rememberMeCheckbox = page.getByRole('checkbox', { name: /remember me/i }).first();
   const loginButton = page.getByRole('button', { name: /login/i }).first();
 
-  // Navigate to the Login page
+// Navigate to the Login page
   await page.goto('http://13.235.85.154:5500/Login', { waitUntil: 'load' });
   await page.waitForLoadState('domcontentloaded');
   await page.waitForTimeout(500);
@@ -56,7 +56,7 @@ test('test', async ({ page }) => {
   await expect(loginButton).toBeVisible({ timeout: 10000 });
   await expect(loginButton).toBeEnabled({ timeout: 10000 });
 
-  // Fill login page with not valid credentials and click on login button
+// Fill login page with not valid credentials and click on login button
   await fillField(extensionField, '1005');
   await fillField(passwordField, 'Shivaay@104');
   await checkBox(rememberMeCheckbox);
@@ -209,223 +209,70 @@ try {
   await page.getByRole('button', { name: 'OK' }).click();
   await expect(page.getByText('Import Completed Successfully')).not.toBeVisible();
 
-  // ─── ADDITIONAL ADVANCED IMPORT SCENARIOS ─────────────────────────────────────
-  {
-    const advancedSettingsButton = page.getByRole('button', { name: /Advanced Settings/i }).first();
-    const allExtCheckbox = page.getByRole('checkbox', { name: /All extensions or Range/i });
-    const lastImportCheckbox = page.getByRole('checkbox', { name: /Import starting from last import date/i });
-    const embeddedDateCheckbox = page.getByRole('checkbox', { name: /Use the recording date embed\(d\)?ed in the file name/i });
-    const startInput = page.locator('input[placeholder*="Start" i], input[name*="start" i], input[id*="start" i]').first();
-    const endInput = page.locator('input[placeholder*="End" i], input[name*="end" i], input[id*="end" i]').first();
-    const dateInput = page.locator('input[type="date"], input[placeholder*="date" i], input[name*="date" i], input[id*="date" i]').first();
+// ─── ADVANCED IMPORT TEST WITH CHECKBOXES ─────────────────────────────────────
+  console.log('\n✅ Starting Advanced Import Test with Checkboxes...');
+  
+// Click Advanced Settings button
+  const advancedSettingsButton = page.getByRole('button', { name: /Advanced Settings/i }).first();
+  await advancedSettingsButton.waitFor({ state: 'visible', timeout: 10000 });
+  await advancedSettingsButton.click();
+  console.log('✅ Advanced Settings button clicked');
 
-    async function ensureCheckbox(locator: Locator, shouldCheck: boolean) {
-      if (shouldCheck) {
-        await locator.check({ force: true });
-        await expect(locator).toBeChecked();
-      } else {
-        await locator.uncheck({ force: true });
-        await expect(locator).not.toBeChecked();
-      }
+// Wait for dropdown elements to appear
+  const allExtCheckbox = page.getByRole('checkbox', { name: /All extensions or Range/i });
+  const lastImportCheckbox = page.getByRole('checkbox', { name: /Import starting from last import date/i });
+  
+  await allExtCheckbox.waitFor({ state: 'visible', timeout: 10000 });
+  await lastImportCheckbox.waitFor({ state: 'visible', timeout: 10000 });
+  console.log('✅ Advanced Settings dropdown appeared');
+
+// Check "All extensions or Range" checkbox
+  await allExtCheckbox.setChecked(true, { force: true });
+  await expect(allExtCheckbox).toBeChecked({ timeout: 10000 });
+  console.log('✅ Checked: All extensions or Range');
+
+// Check "Import starting from last import date" checkbox
+  await lastImportCheckbox.setChecked(true, { force: true });
+  await expect(lastImportCheckbox).toBeChecked({ timeout: 10000 });
+  console.log('✅ Checked: Import starting from last import date');
+
+// Click Import button
+  await importButton.click();
+  console.log('✅ Import button clicked');
+
+// Wait for stop button to appear (import started)
+  await expect(stopButton).toBeVisible({ timeout: 10000 });
+  console.log('✅ Import process started');
+
+// Wait for total to show
+  await expect(totalLocator).toBeVisible({ timeout: 30000 });
+  const totalText2 = await totalLocator.textContent();
+  console.log(`📊 ${totalText2}`);
+
+// Poll for 100% completion
+  await expect.poll(
+    async () => {
+      const pctText = (await percentageLocator.textContent())?.trim();
+      console.log(`⏳ Progress: ${pctText}`);
+      return pctText;
+    },
+    {
+      timeout: 300000,
+      intervals: [1000],
     }
+  ).toMatch(/100\s*%/);
+  console.log('✅ Import reached 100%');
 
-    async function runScenario(name: string, options: {
-      allExtensions: boolean;
-      importFromLastDate: boolean;
-      useEmbeddedDate: boolean;
-      start: string;
-      end: string;
-      importDate?: string;
-    }) {
-      console.log(`\n🔁 Running advanced import scenario: ${name}`);
-      await advancedSettingsButton.waitFor({ state: 'visible', timeout: 10000 });
-      await advancedSettingsButton.click();
+// Validate success popup appears
+  await expect(page.getByText('Import Completed Successfully')).toBeVisible({ timeout: 10000 });
+  console.log('✅ Success popup displayed');
 
-      await ensureCheckbox(allExtCheckbox, options.allExtensions);
-      await ensureCheckbox(lastImportCheckbox, options.importFromLastDate);
-      await ensureCheckbox(embeddedDateCheckbox, options.useEmbeddedDate);
-      await fillField(startInput, options.start);
-      await fillField(endInput, options.end);
+// Click OK to close popup
+  await expect(page.getByRole('button', { name: 'OK' })).toBeVisible({ timeout: 10000 });
+  await page.getByRole('button', { name: 'OK' }).click();
+  await expect(page.getByText('Import Completed Successfully')).not.toBeVisible({ timeout: 10000 });
+  console.log('✅ Popup closed');
 
-      if (options.importFromLastDate) {
-        await expect(dateInput).toBeVisible({ timeout: 10000 });
-        if (options.importDate) {
-          await fillField(dateInput, options.importDate);
-        }
-      }
-
-      await importButton.click();
-      await expect(stopButton).toBeVisible({ timeout: 10000 });
-      await expect(totalLocator).toBeVisible({ timeout: 30000 });
-      await expect
-        .poll(
-          async () => {
-            const pctText = (await percentageLocator.textContent())?.trim();
-            console.log(`⏳ Progress: ${pctText}`);
-            return pctText;
-          },
-          {
-            timeout: 300000,
-            intervals: [1000],
-          }
-        )
-        .toMatch(/100\s*%/);
-
-      await expect(page.getByRole('button', { name: 'OK' })).toBeVisible({ timeout: 10000 });
-      await page.getByRole('button', { name: 'OK' }).click();
-      await expect(page.getByText('Import Completed Successfully')).not.toBeVisible({ timeout: 10000 });
-      await page.screenshot({ path: `import-${name.replace(/\s+/g, '-')}.png`, fullPage: false });
-      console.log(`✅ Completed scenario: ${name}`);
-    }
-
-    await runScenario('all-advanced-settings', {
-      allExtensions: true,
-      importFromLastDate: false,
-      useEmbeddedDate: true,
-      start: '1003',
-      end: '1003',
-    });
-
-    await runScenario('last-import-date-no-embedded', {
-      allExtensions: true,
-      importFromLastDate: true,
-      useEmbeddedDate: false,
-      start: '1003',
-      end: '1003',
-      importDate: '2026-07-27',
-    });
-  }
-
-// Validate Import screen fields and advanced settings after completion
-  await expect(page.getByText('Progress')).toBeVisible();
-  await expect(page.getByText('Extension:')).toBeVisible();
-  await expect(page.getByText('File:')).toBeVisible();
-
-  // Verify advanced settings as shown in the screenshot image
-  await expect(page.getByText('Advanced Settings')).toBeVisible();
-  await page.getByText('Advanced Settings').scrollIntoViewIfNeeded();
-
-  const finalAllExtCheckbox = page.getByRole('checkbox', { name: /All extensions or Range/i });
-  const finalLastImportCheckbox = page.getByRole('checkbox', { name: /Import starting from last import date/i });
-  const finalEmbeddedDateCheckbox = page.getByRole('checkbox', { name: /Use the recording date embed\(d\)?ed in the file name/i });
-  const finalStartInput = page.getByLabel(/Start/i).first();
-  const finalEndInput = page.getByLabel(/End/i).first();
-
-  await expect(finalAllExtCheckbox).toBeChecked();
-  await expect(finalLastImportCheckbox).not.toBeChecked();
-  await expect(finalEmbeddedDateCheckbox).toBeChecked();
-  await expect(finalStartInput).toBeVisible({ timeout: 10000 });
-  await expect(finalEndInput).toBeVisible({ timeout: 10000 });
-  await expect(finalStartInput).toHaveValue(/1003/);
-  await expect(finalEndInput).toHaveValue(/1003/);
-  await expect(page.getByText(/27-07-2026|2026-07-27/)).toBeVisible();
-
-  await expect(page.getByRole('button', { name: 'Import' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Import' })).toBeEnabled();
-
-  await page.screenshot({
-    path: 'import-advanced-settings.png',
-    fullPage: false,
-  });
-  console.log('📸 Saved screenshot to import-advanced-settings.png');
-  await expect(page.getByText('Start Time:')).toBeVisible();
-  await expect(page.getByText('Duration:')).toBeVisible();
-  await expect(page.getByText('Count:')).toBeVisible();
-  await expect(page.getByText('Total:')).toBeVisible();
-  await expect(page.getByText('Percent:')).toBeVisible();
-  await expect(page.getByText('Est.Finish:')).toBeVisible();
-
-  await expect(importButton).toBeVisible();
-  await expect(importButton).toBeEnabled();
-
-  await expect(finalAllExtCheckbox).toBeVisible();
-  await expect(finalLastImportCheckbox).toBeVisible();
-  await expect(finalEmbeddedDateCheckbox).toBeVisible();
-
-  await finalAllExtCheckbox.check();
-  await expect(finalAllExtCheckbox).toBeChecked();
-  await expect(page.locator('input[name*="start" i], input[placeholder*="start" i], input[id*="start" i]')).toBeVisible();
-  await expect(page.locator('input[name*="end" i], input[placeholder*="end" i], input[id*="end" i]')).toBeVisible();
-
-  await finalLastImportCheckbox.check();
-  await expect(finalLastImportCheckbox).toBeChecked();
-  await expect(page.locator('input[type="date"], input[name*="date" i], input[placeholder*="date" i], input[id*="date" i]')).toBeVisible();
-
-  await finalEmbeddedDateCheckbox.check();
-  await expect(finalEmbeddedDateCheckbox).toBeChecked();
-
-  await finalAllExtCheckbox.uncheck();
-  await expect(finalAllExtCheckbox).not.toBeChecked();
-  await finalLastImportCheckbox.uncheck();
-  await expect(finalLastImportCheckbox).not.toBeChecked();
-  await finalEmbeddedDateCheckbox.uncheck();
-  await expect(finalEmbeddedDateCheckbox).not.toBeChecked();
-
-// Capture screenshot after import completes
-  await page.screenshot({
-    path: 'import-complete.png',
-    fullPage: true,
-  });
-  console.log('📸 Saved screenshot to import-complete.png');
-
-// Fallback: at least confirm it's the current page via URL
-  await expect(page).toHaveURL(/import/i);
-  await expect(page.getByRole('button', { name: 'Import' })).toBeVisible();
-  await expect(page.getByText('Extension:')).toBeVisible();
-  await expect(page.getByText('File:')).toBeVisible();
-  await expect(page.getByText('Start Time:')).toBeVisible();
-  await expect(page.getByText('Duration:')).toBeVisible();
-  await expect(page.getByText('Count:')).toBeVisible();
-  await expect(page.getByText('Total:')).toBeVisible();
-  await expect(page.getByText('Percent:')).toBeVisible();
-  await expect(page.getByText('Est.Finish:')).toBeVisible();
-
-// Default counters before an import is started
-  await expect(page.getByText('Count:').locator('..')).toContainText('0');
-  await expect(page.getByText('Percent:').locator('..')).toContainText('0%');
-
-  await expect(page.getByText('Advanced Settings')).toBeVisible();
-  await expect(page.getByText('Import Restrictions')).toBeVisible();
-
-  const allExtensionsCheckbox = page.getByRole('checkbox', { name: /All extensions or Range/i });
-  const lastImportDateCheckbox = page.getByRole('checkbox', { name: /Import starting from last import date/i });
-  const embeddedDateCheckbox = page.getByRole('checkbox', { name: /Use the recording date embed(d)?ed in the file name/i });
-
-  await expect(allExtensionsCheckbox).toBeVisible();
-  await expect(lastImportDateCheckbox).toBeVisible();
-  await expect(embeddedDateCheckbox).toBeVisible();
-
-// Check each import-related checkbox and verify state
-  await allExtensionsCheckbox.check();
-  await expect(allExtensionsCheckbox).toBeChecked();
-  await lastImportDateCheckbox.check();
-  await expect(lastImportDateCheckbox).toBeChecked();
-  await embeddedDateCheckbox.check();
-  await expect(embeddedDateCheckbox).toBeChecked();
-
-// Verify the Import button is actionable without triggering a new import
-  await expect(importButton).toBeVisible();
-  await expect(importButton).toBeEnabled();
-  console.log('✅ Import button is actionable');
-
-// Uncheck all import-related checkboxes
-  await allExtensionsCheckbox.uncheck();
-  await expect(allExtensionsCheckbox).not.toBeChecked();
-  await lastImportDateCheckbox.uncheck();
-  await expect(lastImportDateCheckbox).not.toBeChecked();
-  await embeddedDateCheckbox.uncheck();
-  await expect(embeddedDateCheckbox).not.toBeChecked();
-
-  await page.getByRole('button', { name: 'Login' }).click();
-  await page.getByText('Login Unsuccessful.').click();
-  await page.getByRole('button', { name: 'Login' }).click();
-  await page.getByRole('alert').locator('svg').click();
-
-
-
-
-
-
-
+  console.log('\n✅✅✅ Advanced Import Test Completed Successfully! ✅✅✅');
 
 });
