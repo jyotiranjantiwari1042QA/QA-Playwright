@@ -200,6 +200,48 @@ try {
 
  console.log("✅ Sync reached 100%");
 
+  // Validate Import screen fields and advanced settings after completion
+  await expect(page.getByText('Progress')).toBeVisible();
+  await expect(page.getByText('Extension:')).toBeVisible();
+  await expect(page.getByText('File:')).toBeVisible();
+  await expect(page.getByText('Start Time:')).toBeVisible();
+  await expect(page.getByText('Duration:')).toBeVisible();
+  await expect(page.getByText('Count:')).toBeVisible();
+  await expect(page.getByText('Total:')).toBeVisible();
+  await expect(page.getByText('Percent:')).toBeVisible();
+  await expect(page.getByText('Est.Finish:')).toBeVisible();
+
+  await expect(importButton).toBeVisible();
+  await expect(importButton).toBeEnabled();
+  await expect(stopButton).toBeVisible();
+
+  const allExtCheckbox = page.getByRole('checkbox', { name: /All extensions or Range/i });
+  const lastImportCheckbox = page.getByRole('checkbox', { name: /Import starting from last import date/i });
+  const embeddedDateChk = page.getByRole('checkbox', { name: /Use the recording date embed(d)?ed in the file name/i });
+
+  await expect(allExtCheckbox).toBeVisible();
+  await expect(lastImportCheckbox).toBeVisible();
+  await expect(embeddedDateChk).toBeVisible();
+
+  await allExtCheckbox.check();
+  await expect(allExtCheckbox).toBeChecked();
+  await expect(page.locator('input[name*="start" i], input[placeholder*="start" i], input[id*="start" i]')).toBeVisible();
+  await expect(page.locator('input[name*="end" i], input[placeholder*="end" i], input[id*="end" i]')).toBeVisible();
+
+  await lastImportCheckbox.check();
+  await expect(lastImportCheckbox).toBeChecked();
+  await expect(page.locator('input[type="date"], input[name*="date" i], input[placeholder*="date" i], input[id*="date" i]')).toBeVisible();
+
+  await embeddedDateChk.check();
+  await expect(embeddedDateChk).toBeChecked();
+
+  await allExtCheckbox.uncheck();
+  await expect(allExtCheckbox).not.toBeChecked();
+  await lastImportCheckbox.uncheck();
+  await expect(lastImportCheckbox).not.toBeChecked();
+  await embeddedDateChk.uncheck();
+  await expect(embeddedDateChk).not.toBeChecked();
+
 // Validate success popup appears
   await expect(page.getByText('Success')).toBeVisible({ timeout: 10000 });
   await expect(page.getByText('Import Completed Successfully')).toBeVisible();
@@ -207,6 +249,13 @@ try {
 // Click OK and confirm popup closes
   await page.getByRole('button', { name: 'OK' }).click();
   await expect(page.getByText('Import Completed Successfully')).not.toBeVisible();
+
+  // Capture screenshot after import completes
+  await page.screenshot({
+    path: 'import-complete.png',
+    fullPage: true,
+  });
+  console.log('📸 Saved screenshot to import-complete.png');
 
 // Fallback: at least confirm it's the current page via URL
   await expect(page).toHaveURL(/import/i);
@@ -234,6 +283,28 @@ try {
   await expect(allExtensionsCheckbox).toBeVisible();
   await expect(lastImportDateCheckbox).toBeVisible();
   await expect(embeddedDateCheckbox).toBeVisible();
+
+  // Check each import-related checkbox and verify state
+  await allExtensionsCheckbox.check();
+  await expect(allExtensionsCheckbox).toBeChecked();
+  await lastImportDateCheckbox.check();
+  await expect(lastImportDateCheckbox).toBeChecked();
+  await embeddedDateCheckbox.check();
+  await expect(embeddedDateCheckbox).toBeChecked();
+
+  // Verify the Import button is actionable without triggering a new import
+  await expect(importButton).toBeVisible();
+  await expect(importButton).toBeEnabled();
+  console.log('✅ Import button is actionable');
+
+  // Uncheck all import-related checkboxes
+  await allExtensionsCheckbox.uncheck();
+  await expect(allExtensionsCheckbox).not.toBeChecked();
+  await lastImportDateCheckbox.uncheck();
+  await expect(lastImportDateCheckbox).not.toBeChecked();
+  await embeddedDateCheckbox.uncheck();
+  await expect(embeddedDateCheckbox).not.toBeChecked();
+
   await page.getByRole('button', { name: 'Login' }).click();
   await page.getByText('Login Unsuccessful.').click();
   await page.getByRole('button', { name: 'Login' }).click();
