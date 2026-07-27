@@ -305,19 +305,19 @@ try {
   await expect(page.getByText('Advanced Settings')).toBeVisible();
   await page.getByText('Advanced Settings').scrollIntoViewIfNeeded();
 
-  const allExtCheckbox = page.getByRole('checkbox', { name: /All extensions or Range/i });
-  const lastImportCheckbox = page.getByRole('checkbox', { name: /Import starting from last import date/i });
-  const embeddedDateCheckbox = page.getByRole('checkbox', { name: /Use the recording date embed\(d\)?ed in the file name/i });
-  const startInput = page.getByLabel(/Start/i).first();
-  const endInput = page.getByLabel(/End/i).first();
+  const finalAllExtCheckbox = page.getByRole('checkbox', { name: /All extensions or Range/i });
+  const finalLastImportCheckbox = page.getByRole('checkbox', { name: /Import starting from last import date/i });
+  const finalEmbeddedDateCheckbox = page.getByRole('checkbox', { name: /Use the recording date embed\(d\)?ed in the file name/i });
+  const finalStartInput = page.getByLabel(/Start/i).first();
+  const finalEndInput = page.getByLabel(/End/i).first();
 
-  await expect(allExtCheckbox).toBeChecked();
-  await expect(lastImportCheckbox).not.toBeChecked();
-  await expect(embeddedDateCheckbox).toBeChecked();
-  await expect(startInput).toBeVisible({ timeout: 10000 });
-  await expect(endInput).toBeVisible({ timeout: 10000 });
-  await expect(startInput).toHaveValue(/1003/);
-  await expect(endInput).toHaveValue(/1003/);
+  await expect(finalAllExtCheckbox).toBeChecked();
+  await expect(finalLastImportCheckbox).not.toBeChecked();
+  await expect(finalEmbeddedDateCheckbox).toBeChecked();
+  await expect(finalStartInput).toBeVisible({ timeout: 10000 });
+  await expect(finalEndInput).toBeVisible({ timeout: 10000 });
+  await expect(finalStartInput).toHaveValue(/1003/);
+  await expect(finalEndInput).toHaveValue(/1003/);
   await expect(page.getByText(/27-07-2026|2026-07-27/)).toBeVisible();
 
   await expect(page.getByRole('button', { name: 'Import' })).toBeVisible();
@@ -338,32 +338,28 @@ try {
   await expect(importButton).toBeVisible();
   await expect(importButton).toBeEnabled();
 
-  const allExtCheckbox = page.getByRole('checkbox', { name: /All extensions or Range/i });
-  const lastImportCheckbox = page.getByRole('checkbox', { name: /Import starting from last import date/i });
-  const embeddedDateChk = page.getByRole('checkbox', { name: /Use the recording date embed(d)?ed in the file name/i });
+  await expect(finalAllExtCheckbox).toBeVisible();
+  await expect(finalLastImportCheckbox).toBeVisible();
+  await expect(finalEmbeddedDateCheckbox).toBeVisible();
 
-  await expect(allExtCheckbox).toBeVisible();
-  await expect(lastImportCheckbox).toBeVisible();
-  await expect(embeddedDateChk).toBeVisible();
-
-  await allExtCheckbox.check();
-  await expect(allExtCheckbox).toBeChecked();
+  await finalAllExtCheckbox.check();
+  await expect(finalAllExtCheckbox).toBeChecked();
   await expect(page.locator('input[name*="start" i], input[placeholder*="start" i], input[id*="start" i]')).toBeVisible();
   await expect(page.locator('input[name*="end" i], input[placeholder*="end" i], input[id*="end" i]')).toBeVisible();
 
-  await lastImportCheckbox.check();
-  await expect(lastImportCheckbox).toBeChecked();
+  await finalLastImportCheckbox.check();
+  await expect(finalLastImportCheckbox).toBeChecked();
   await expect(page.locator('input[type="date"], input[name*="date" i], input[placeholder*="date" i], input[id*="date" i]')).toBeVisible();
 
-  await embeddedDateChk.check();
-  await expect(embeddedDateChk).toBeChecked();
+  await finalEmbeddedDateCheckbox.check();
+  await expect(finalEmbeddedDateCheckbox).toBeChecked();
 
-  await allExtCheckbox.uncheck();
-  await expect(allExtCheckbox).not.toBeChecked();
-  await lastImportCheckbox.uncheck();
-  await expect(lastImportCheckbox).not.toBeChecked();
-  await embeddedDateChk.uncheck();
-  await expect(embeddedDateChk).not.toBeChecked();
+  await finalAllExtCheckbox.uncheck();
+  await expect(finalAllExtCheckbox).not.toBeChecked();
+  await finalLastImportCheckbox.uncheck();
+  await expect(finalLastImportCheckbox).not.toBeChecked();
+  await finalEmbeddedDateCheckbox.uncheck();
+  await expect(finalEmbeddedDateCheckbox).not.toBeChecked();
 
 // Capture screenshot after import completes
   await page.screenshot({
