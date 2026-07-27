@@ -209,10 +209,125 @@ try {
   await page.getByRole('button', { name: 'OK' }).click();
   await expect(page.getByText('Import Completed Successfully')).not.toBeVisible();
 
+  // ─── ADDITIONAL ADVANCED IMPORT SCENARIOS ─────────────────────────────────────
+  {
+    const advancedSettingsButton = page.getByRole('button', { name: /Advanced Settings/i }).first();
+    const allExtCheckbox = page.getByRole('checkbox', { name: /All extensions or Range/i });
+    const lastImportCheckbox = page.getByRole('checkbox', { name: /Import starting from last import date/i });
+    const embeddedDateCheckbox = page.getByRole('checkbox', { name: /Use the recording date embed\(d\)?ed in the file name/i });
+    const startInput = page.locator('input[placeholder*="Start" i], input[name*="start" i], input[id*="start" i]').first();
+    const endInput = page.locator('input[placeholder*="End" i], input[name*="end" i], input[id*="end" i]').first();
+    const dateInput = page.locator('input[type="date"], input[placeholder*="date" i], input[name*="date" i], input[id*="date" i]').first();
+
+    async function ensureCheckbox(locator: Locator, shouldCheck: boolean) {
+      if (shouldCheck) {
+        await locator.check({ force: true });
+        await expect(locator).toBeChecked();
+      } else {
+        await locator.uncheck({ force: true });
+        await expect(locator).not.toBeChecked();
+      }
+    }
+
+    async function runScenario(name: string, options: {
+      allExtensions: boolean;
+      importFromLastDate: boolean;
+      useEmbeddedDate: boolean;
+      start: string;
+      end: string;
+      importDate?: string;
+    }) {
+      console.log(`\n🔁 Running advanced import scenario: ${name}`);
+      await advancedSettingsButton.waitFor({ state: 'visible', timeout: 10000 });
+      await advancedSettingsButton.click();
+
+      await ensureCheckbox(allExtCheckbox, options.allExtensions);
+      await ensureCheckbox(lastImportCheckbox, options.importFromLastDate);
+      await ensureCheckbox(embeddedDateCheckbox, options.useEmbeddedDate);
+      await fillField(startInput, options.start);
+      await fillField(endInput, options.end);
+
+      if (options.importFromLastDate) {
+        await expect(dateInput).toBeVisible({ timeout: 10000 });
+        if (options.importDate) {
+          await fillField(dateInput, options.importDate);
+        }
+      }
+
+      await importButton.click();
+      await expect(stopButton).toBeVisible({ timeout: 10000 });
+      await expect(totalLocator).toBeVisible({ timeout: 30000 });
+      await expect
+        .poll(
+          async () => {
+            const pctText = (await percentageLocator.textContent())?.trim();
+            console.log(`⏳ Progress: ${pctText}`);
+            return pctText;
+          },
+          {
+            timeout: 300000,
+            intervals: [1000],
+          }
+        )
+        .toMatch(/100\s*%/);
+
+      await expect(page.getByRole('button', { name: 'OK' })).toBeVisible({ timeout: 10000 });
+      await page.getByRole('button', { name: 'OK' }).click();
+      await expect(page.getByText('Import Completed Successfully')).not.toBeVisible({ timeout: 10000 });
+      await page.screenshot({ path: `import-${name.replace(/\s+/g, '-')}.png`, fullPage: false });
+      console.log(`✅ Completed scenario: ${name}`);
+    }
+
+    await runScenario('all-advanced-settings', {
+      allExtensions: true,
+      importFromLastDate: false,
+      useEmbeddedDate: true,
+      start: '1003',
+      end: '1003',
+    });
+
+    await runScenario('last-import-date-no-embedded', {
+      allExtensions: true,
+      importFromLastDate: true,
+      useEmbeddedDate: false,
+      start: '1003',
+      end: '1003',
+      importDate: '2026-07-27',
+    });
+  }
+
 // Validate Import screen fields and advanced settings after completion
   await expect(page.getByText('Progress')).toBeVisible();
   await expect(page.getByText('Extension:')).toBeVisible();
   await expect(page.getByText('File:')).toBeVisible();
+
+  // Verify advanced settings as shown in the screenshot image
+  await expect(page.getByText('Advanced Settings')).toBeVisible();
+  await page.getByText('Advanced Settings').scrollIntoViewIfNeeded();
+
+  const allExtCheckbox = page.getByRole('checkbox', { name: /All extensions or Range/i });
+  const lastImportCheckbox = page.getByRole('checkbox', { name: /Import starting from last import date/i });
+  const embeddedDateCheckbox = page.getByRole('checkbox', { name: /Use the recording date embed\(d\)?ed in the file name/i });
+  const startInput = page.getByLabel(/Start/i).first();
+  const endInput = page.getByLabel(/End/i).first();
+
+  await expect(allExtCheckbox).toBeChecked();
+  await expect(lastImportCheckbox).not.toBeChecked();
+  await expect(embeddedDateCheckbox).toBeChecked();
+  await expect(startInput).toBeVisible({ timeout: 10000 });
+  await expect(endInput).toBeVisible({ timeout: 10000 });
+  await expect(startInput).toHaveValue(/1003/);
+  await expect(endInput).toHaveValue(/1003/);
+  await expect(page.getByText(/27-07-2026|2026-07-27/)).toBeVisible();
+
+  await expect(page.getByRole('button', { name: 'Import' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Import' })).toBeEnabled();
+
+  await page.screenshot({
+    path: 'import-advanced-settings.png',
+    fullPage: false,
+  });
+  console.log('📸 Saved screenshot to import-advanced-settings.png');
   await expect(page.getByText('Start Time:')).toBeVisible();
   await expect(page.getByText('Duration:')).toBeVisible();
   await expect(page.getByText('Count:')).toBeVisible();
