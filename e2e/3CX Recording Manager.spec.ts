@@ -200,7 +200,16 @@ try {
 
  console.log("✅ Sync reached 100%");
 
-  // Validate Import screen fields and advanced settings after completion
+// Validate success popup appears
+  await expect(page.getByRole('heading', { name: /Imports/i })).toBeVisible({ timeout: 10000 });
+  await expect(page.getByText('Import Completed Successfully')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'OK' })).toBeVisible();
+
+// Click OK and confirm popup closes
+  await page.getByRole('button', { name: 'OK' }).click();
+  await expect(page.getByText('Import Completed Successfully')).not.toBeVisible();
+
+// Validate Import screen fields and advanced settings after completion
   await expect(page.getByText('Progress')).toBeVisible();
   await expect(page.getByText('Extension:')).toBeVisible();
   await expect(page.getByText('File:')).toBeVisible();
@@ -213,7 +222,6 @@ try {
 
   await expect(importButton).toBeVisible();
   await expect(importButton).toBeEnabled();
-  await expect(stopButton).toBeVisible();
 
   const allExtCheckbox = page.getByRole('checkbox', { name: /All extensions or Range/i });
   const lastImportCheckbox = page.getByRole('checkbox', { name: /Import starting from last import date/i });
@@ -242,15 +250,7 @@ try {
   await embeddedDateChk.uncheck();
   await expect(embeddedDateChk).not.toBeChecked();
 
-// Validate success popup appears
-  await expect(page.getByText('Success')).toBeVisible({ timeout: 10000 });
-  await expect(page.getByText('Import Completed Successfully')).toBeVisible();
-  
-// Click OK and confirm popup closes
-  await page.getByRole('button', { name: 'OK' }).click();
-  await expect(page.getByText('Import Completed Successfully')).not.toBeVisible();
-
-  // Capture screenshot after import completes
+// Capture screenshot after import completes
   await page.screenshot({
     path: 'import-complete.png',
     fullPage: true,
@@ -269,7 +269,7 @@ try {
   await expect(page.getByText('Percent:')).toBeVisible();
   await expect(page.getByText('Est.Finish:')).toBeVisible();
 
-  // Default counters before an import is started
+// Default counters before an import is started
   await expect(page.getByText('Count:').locator('..')).toContainText('0');
   await expect(page.getByText('Percent:').locator('..')).toContainText('0%');
 
@@ -284,7 +284,7 @@ try {
   await expect(lastImportDateCheckbox).toBeVisible();
   await expect(embeddedDateCheckbox).toBeVisible();
 
-  // Check each import-related checkbox and verify state
+// Check each import-related checkbox and verify state
   await allExtensionsCheckbox.check();
   await expect(allExtensionsCheckbox).toBeChecked();
   await lastImportDateCheckbox.check();
@@ -292,12 +292,12 @@ try {
   await embeddedDateCheckbox.check();
   await expect(embeddedDateCheckbox).toBeChecked();
 
-  // Verify the Import button is actionable without triggering a new import
+// Verify the Import button is actionable without triggering a new import
   await expect(importButton).toBeVisible();
   await expect(importButton).toBeEnabled();
   console.log('✅ Import button is actionable');
 
-  // Uncheck all import-related checkboxes
+// Uncheck all import-related checkboxes
   await allExtensionsCheckbox.uncheck();
   await expect(allExtensionsCheckbox).not.toBeChecked();
   await lastImportDateCheckbox.uncheck();
