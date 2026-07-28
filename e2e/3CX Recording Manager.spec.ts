@@ -220,19 +220,23 @@ try {
 
 // Wait for dropdown elements to appear
   const allExtCheckbox = page.getByRole('checkbox', { name: /All extensions or Range/i });
-  const lastImportCheckbox = page.getByRole('checkbox', { name: /Import starting from last import date/i });
+  // use the shorter, stable label that matches the page's accessible name
+  const lastImportCheckbox = page.getByRole('checkbox', { name: /Import starting from last/i });
   
-  await allExtCheckbox.waitFor({ state: 'visible', timeout: 10000 });
-  await lastImportCheckbox.waitFor({ state: 'visible', timeout: 10000 });
+  // prefer expect(...).toBeVisible for clearer failures and messages
+  await expect(allExtCheckbox).toBeVisible({ timeout: 10000 });
+  await expect(lastImportCheckbox).toBeVisible({ timeout: 10000 });
+  await allExtCheckbox.scrollIntoViewIfNeeded();
+  await lastImportCheckbox.scrollIntoViewIfNeeded();
   console.log('✅ Advanced Settings dropdown appeared');
 
 // Check "All extensions or Range" checkbox
-  await allExtCheckbox.setChecked(true, { force: true });
+  await allExtCheckbox.setChecked(true);
   await expect(allExtCheckbox).toBeChecked({ timeout: 10000 });
   console.log('✅ Checked: All extensions or Range');
 
 // Check "Import starting from last import date" checkbox
-  await lastImportCheckbox.setChecked(true, { force: true });
+  await lastImportCheckbox.setChecked(true);
   await expect(lastImportCheckbox).toBeChecked({ timeout: 10000 });
   console.log('✅ Checked: Import starting from last import date');
 
