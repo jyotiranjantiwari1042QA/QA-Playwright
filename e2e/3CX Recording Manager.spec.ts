@@ -212,13 +212,15 @@ try {
 // ─── ADVANCED IMPORT TEST WITH CHECKBOXES ─────────────────────────────────────
   console.log('\n✅ Starting Advanced Import Test with Checkboxes...');
   
-// Click Advanced Settings button
+// Click Advanced Settings button first, then wait for the dropdown settings to appear
   const advancedSettingsButton = page.getByRole('button', { name: /Advanced Settings/i }).first();
-  await advancedSettingsButton.waitFor({ state: 'visible', timeout: 10000 });
+  await page.getByRole('button', { name: 'Advanced Settings' }).click();
+  await expect(advancedSettingsButton).toBeVisible({ timeout: 10000 });
+  await advancedSettingsButton.scrollIntoViewIfNeeded();
   await advancedSettingsButton.click();
   console.log('✅ Advanced Settings button clicked');
 
-// Wait for dropdown elements to appear
+// Wait for Advanced Settings dropdown items to appear
   const allExtCheckbox = page.getByRole('checkbox', { name: /All extensions or Range/i });
   // use the shorter, stable label that matches the page's accessible name
   const lastImportCheckbox = page.getByRole('checkbox', { name: /Import starting from last/i });
