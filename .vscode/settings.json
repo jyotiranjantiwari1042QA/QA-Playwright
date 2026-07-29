@@ -2,5 +2,9 @@
   "playwright.testDir": "./e2e",
   "extensions.ignoreRecommendations": true,
   "workbench.editor.enablePreview": false,
-  "playwrightE2E.defaultProject": ""
+  "playwrightE2E.defaultProject": "",
+  "cSpell.words": [
+    "domcontentloaded",
+    "networkidle"
+  ]
 }
