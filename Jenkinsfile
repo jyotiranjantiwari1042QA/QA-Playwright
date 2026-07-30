@@ -34,6 +34,14 @@ pipeline {
   post {
     always {
       junit 'test-results/**/*.xml'
+      publishHTML(target: [
+        allowMissing: true,
+        alwaysLinkToLastBuild: true,
+        keepAll: true,
+        reportDir: 'playwright-report',
+        reportFiles: 'index.html',
+        reportName: 'Playwright HTML Report'
+      ])
     }
   }
 }
