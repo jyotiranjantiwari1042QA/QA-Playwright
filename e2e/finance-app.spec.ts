@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
+import process from 'node:process';
 
-const baseURL = process.env.FINANCE_APP_URL || 'https://www.airtelpayments.bank.in/login';
+const baseURL = process?.env?.FINANCE_APP_URL || 'https://www.airtelpayments.bank.in/login';
 
 test.describe('Payments Bank mobile login sample', () => {
   test('user can enter mobile number and request OTP', async ({ page }) => {
