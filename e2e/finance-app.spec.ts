@@ -12,19 +12,21 @@ test.describe('Payments Bank mobile login sample', () => {
 
     const mobileInput = page.getByLabel('Mobile Number*');
     await expect(mobileInput).toBeVisible();
-    await mobileInput.fill('9729644457');
+    await mobileInput.fill('9416634433');
+
+    const recaptchaFrame = page.frameLocator('iframe[title*="reCAPTCHA"], iframe[src*="recaptcha"], iframe[title*="captcha"]');
+    const recaptchaCheckbox = recaptchaFrame.locator('#recaptcha-anchor, div[role="checkbox"], .recaptcha-checkbox');
+    await expect(recaptchaCheckbox).toBeVisible({ timeout: 60000 });
+    await expect(recaptchaCheckbox).toBeEnabled({ timeout: 60000 });
+    await recaptchaCheckbox.click();
+    await expect(recaptchaCheckbox).toHaveAttribute('aria-checked', 'true', { timeout: 10000 }).catch(() => null);
 
     const sendOtpButton = page.getByRole('button', { name: /send otp/i }).first();
     await expect(sendOtpButton).toBeVisible();
+    await expect(sendOtpButton).toBeEnabled({ timeout: 20000 });
+    await expect(sendOtpButton).toBeVisible();
     await expect(sendOtpButton).toBeEnabled();
     await sendOtpButton.click();
-
-    const recaptchaFrame = page.frameLocator('iframe[title*="reCAPTCHA"], iframe[src*="recaptcha"]');
-    const recaptchaCheckbox = recaptchaFrame.locator('#recaptcha-anchor, div[role="checkbox"]');
-    if (await recaptchaCheckbox.count() > 0) {
-      await expect(recaptchaCheckbox).toBeVisible({ timeout: 20000 });
-      await recaptchaCheckbox.click();
-    }
 
     await expect(page.getByText(/otp|one time password/i)).toBeVisible({ timeout: 20000 });
     await expect(page.getByText(/otp has been sent|we have sent|sent to your mobile/i)).toBeVisible({ timeout: 20000 });
