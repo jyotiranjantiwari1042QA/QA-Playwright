@@ -1,0 +1,19 @@
+{
+  "name": "fintech-playwright",
+  "version": "1.0.0",
+  "description": "POM-based Playwright + TypeScript QA automation suite for a fintech web app (ParaBank demo)",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "test:chromium": "playwright test --project=chromium",
+    "test:api": "playwright test tests/api.spec.ts",
+    "report": "playwright show-report",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.47.0",
+    "@types/node": "^20.14.0",
+    "typescript": "^5.5.0"
+  }
+}
