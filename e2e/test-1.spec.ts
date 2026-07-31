@@ -1,5 +1,44 @@
 import { test, expect } from '@playwright/test';
 
 test('test', async ({ page }) => {
-  // Recording...
+  await page.goto('https://www.airtelpayments.bank.in/login');
+  await page.getByRole('textbox', { name: 'Mobile Number*' }).click();
+  await page.getByRole('textbox', { name: 'Mobile Number*' }).fill('9729644457');
+  await page.locator('iframe[name="a-cuo6zqg4jai"]').contentFrame().getByRole('checkbox', { name: 'I\'m not a robot' }).click();
+  await page.locator('iframe[name="c-cuo6zqg4jjzi"]').contentFrame().locator('[id="4"]').click();
+  await page.locator('iframe[name="c-cuo6zqg4jjzi"]').contentFrame().locator('[id="5"]').click();
+  await page.locator('iframe[name="c-cuo6zqg4jjzi"]').contentFrame().locator('[id="6"]').click();
+  await page.locator('iframe[name="c-cuo6zqg4jjzi"]').contentFrame().getByRole('button', { name: 'Verify' }).click();
+  await page.locator('iframe[name="c-cuo6zqg4jjzi"]').contentFrame().locator('[id="4"]').click();
+  await page.locator('iframe[name="c-cuo6zqg4jjzi"]').contentFrame().getByRole('button', { name: 'Verify' }).click();
+  await page.locator('iframe[name="c-cuo6zqg4jjzi"]').contentFrame().locator('[id="5"]').click();
+  await page.locator('iframe[name="c-cuo6zqg4jjzi"]').contentFrame().locator('[id="6"]').click();
+  await page.locator('iframe[name="c-cuo6zqg4jjzi"]').contentFrame().getByRole('button', { name: 'Next' }).click();
+  await page.locator('iframe[name="c-cuo6zqg4jjzi"]').contentFrame().locator('[id="8"]').click();
+  await page.locator('iframe[name="c-cuo6zqg4jjzi"]').contentFrame().locator('[id="11"]').click();
+  await page.locator('iframe[name="c-cuo6zqg4jjzi"]').contentFrame().locator('[id="14"]').click();
+  await page.locator('iframe[name="c-cuo6zqg4jjzi"]').contentFrame().getByRole('button', { name: 'Next' }).click();
+  await page.locator('iframe[name="c-cuo6zqg4jjzi"]').contentFrame().locator('[id="8"]').click();
+  await page.locator('iframe[name="c-cuo6zqg4jjzi"]').contentFrame().locator('[id="5"]').click();
+  await page.locator('iframe[name="c-cuo6zqg4jjzi"]').contentFrame().locator('[id="9"]').click();
+  await page.locator('iframe[name="c-cuo6zqg4jjzi"]').contentFrame().locator('[id="4"]').click();
+  await page.locator('iframe[name="c-cuo6zqg4jjzi"]').contentFrame().getByRole('button', { name: 'Next' }).click();
+  await page.locator('iframe[name="c-cuo6zqg4jjzi"]').contentFrame().locator('[id="6"]').click();
+  await page.locator('iframe[name="c-cuo6zqg4jjzi"]').contentFrame().locator('[id="10"]').click();
+  await page.locator('iframe[name="c-cuo6zqg4jjzi"]').contentFrame().getByRole('button', { name: 'Next' }).click();
+  await page.locator('iframe[name="c-cuo6zqg4jjzi"]').contentFrame().locator('[id="6"]').click();
+  await page.locator('iframe[name="c-cuo6zqg4jjzi"]').contentFrame().getByRole('button', { name: 'Verify' }).click();
+  await page.locator('iframe[name="c-cuo6zqg4jjzi"]').contentFrame().locator('[id="0"]').click();
+  await page.locator('iframe[name="c-cuo6zqg4jjzi"]').contentFrame().locator('[id="2"]').click();
+  await page.locator('iframe[name="c-cuo6zqg4jjzi"]').contentFrame().locator('[id="5"]').click();
+  await page.locator('iframe[name="c-cuo6zqg4jjzi"]').contentFrame().locator('[id="5"]').click();
+  await page.locator('iframe[name="c-cuo6zqg4jjzi"]').contentFrame().getByRole('button', { name: 'Verify' }).click();
+  await page.getByRole('button', { name: 'Send OTP' }).click();
+  await page.getByRole('button', { name: 'Send OTP' }).click();
+  await page.locator('iframe[name="a-l080guy4nkv5"]').contentFrame().getByRole('checkbox', { name: 'I\'m not a robot' }).click();
+  await page.locator('iframe[name="c-l080guy4nkv5"]').contentFrame().locator('[id="0"]').click();
+  await page.locator('iframe[name="c-l080guy4nkv5"]').contentFrame().locator('[id="4"]').click();
+  await page.locator('iframe[name="c-l080guy4nkv5"]').contentFrame().locator('[id="4"]').click();
+  await page.locator('iframe[name="c-l080guy4nkv5"]').contentFrame().locator('[id="0"]').click();
+  await page.locator('iframe[name="c-l080guy4nkv5"]').contentFrame().locator('[id="0"]').click();
 });
