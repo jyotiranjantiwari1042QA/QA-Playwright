@@ -1,7 +1,7 @@
 import { test, expect, type Locator, type Page } from '@playwright/test';
 
 const BASE_URL = process.env.BASE_URL || 'http://13.235.85.154:5500';
-con                                                                                 st EXTENSION = process.env.TEST_EXTENSION || '1005';
+const EXTENSION = process.env.TEST_EXTENSION || '1005';
 const PASSWORD = process.env.TEST_PASSWORD || 'Shivaay@1042';
 
 const TIMEOUTS = {
@@ -37,32 +37,13 @@ async function setCheckbox(locator: Locator, checked: boolean) {
   await locator.setChecked(checked);
 }
 
-async function login(page: Page, extension: string, password: string) {
-  await page.goto(`${BASE_URL}/Login`, { waitUntil: 'load' });
-  await page.waitForLoadState('domcontentloaded');
-  await page.waitForTimeout(500);
-
-  const extensionField = page
-    .locator(
-      'input[name*="extension" i], input[placeholder*="extension" i], input[aria-label*="extension" i], input[id*="extension" i], input[autocomplete="username"]'
-    )
-    .first();
-  const passwordField = page
-    .locator(
-      'input[type="password"], input[name*="password" i], input[placeholder*="password" i], input[aria-label*="password" i], input[id*="password" i], input[autocomplete="current-password"]'
-    )
-    .first();
-  const rememberMeCheckbox = page.getByRole('checkbox', { name: /remember me/i }).first();
-  const loginButton = page.getByRole('button', { name: /login/i }).first();
-
-  await expect(loginButton).toBeVisible({ timeout: TIMEOUTS.default });
-  await expect(loginButton).toBeEnabled({ timeout: TIMEOUTS.default });
-
-  await fillField(extensionField, extension);
-  await fillField(passwordField, password);
-  await setCheckbox(rememberMeCheckbox, true);
-  await safeClick(loginButton);
-  await page.waitForLoadState('networkidle');
+async function logout(page: Page) {
+  const logoutButton = page.locator('button, a').filter({ hasText: /logout/i }).first();
+  await logoutButton.waitFor({ state: 'visible', timeout: TIMEOUTS.default });
+  await logoutButton.scrollIntoViewIfNeeded();
+  await safeClick(logoutButton);
+  await expect(page).toHaveURL(/Login/i, { timeout: TIMEOUTS.navigation });
+  console.log('✅ Logged out successfully');
 }
 
 async function dismissWhatsNewPopup(page: Page) {
@@ -200,6 +181,55 @@ test.describe('3CX Recording Manager - Navigation', () => {
       console.log(`✅ ${tab} page:`, page.url());
     });
   }
+});
+
+test.describe('3CX Recording Manager - Comprehensive Navigation', () => {
+  test('login once and navigate through all pages then logout', async ({ page }) => {
+    // Login once
+    await login(page, EXTENSION, PASSWORD);
+    await dismissWhatsNewPopup(page);
+
+    // Navigate to Recordings page
+    await navigateToRecordings(page);
+
+    // Navigate to Import page
+    await navigateToImport(page);
+
+    // Navigate to Reports page
+    const reportsLink = page.getByRole('link', { name: /Reports/i }).or(page.getByText('Reports', { exact: true }));
+    await reportsLink.waitFor({ state: 'visible', timeout: TIMEOUTS.default });
+    await reportsLink.scrollIntoViewIfNeeded();
+    await safeClick(reportsLink);
+    await expect(page).toHaveURL(/Reports/i, { timeout: TIMEOUTS.navigation });
+    console.log('✅ Reports page:', page.url());
+
+    // Navigate to Logs page
+    const logsLink = page.getByRole('link', { name: /Logs/i }).or(page.getByText('Logs', { exact: true }));
+    await logsLink.waitFor({ state: 'visible', timeout: TIMEOUTS.default });
+    await logsLink.scrollIntoViewIfNeeded();
+    await safeClick(logsLink);
+    await expect(page).toHaveURL(/Logs/i, { timeout: TIMEOUTS.navigation });
+    console.log('✅ Logs page:', page.url());
+
+    // Navigate to Audit page
+    const auditLink = page.getByRole('link', { name: /Audit/i }).or(page.getByText('Audit', { exact: true }));
+    await auditLink.waitFor({ state: 'visible', timeout: TIMEOUTS.default });
+    await auditLink.scrollIntoViewIfNeeded();
+    await safeClick(auditLink);
+    await expect(page).toHaveURL(/Audit/i, { timeout: TIMEOUTS.navigation });
+    console.log('✅ Audit page:', page.url());
+
+    // Navigate to Settings page
+    const settingsLink = page.getByRole('link', { name: /Settings/i }).or(page.getByText('Settings', { exact: true }));
+    await settingsLink.waitFor({ state: 'visible', timeout: TIMEOUTS.default });
+    await settingsLink.scrollIntoViewIfNeeded();
+    await safeClick(settingsLink);
+    await expect(page).toHaveURL(/Settings/i, { timeout: TIMEOUTS.navigation });
+    console.log('✅ Settings page:', page.url());
+
+    // Logout
+    await logout(page);
+  });
 });
 
 test.describe('3CX Recording Manager - Invalid Login', () => {

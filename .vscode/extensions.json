@@ -1,6 +1,8 @@
 {
   "recommendations": [
-    "ms-playwright.playwright"
+    "ms-playwright.playwright",
+    "saoudrizwan.claude-dev",
+    "agsoft.claude-history-viewer"
   ],
   "unwantedRecommendations": [
     "gupei.neo-playwright",
