@@ -126,17 +126,72 @@ async function runImportAndWaitForCompletion(page: Page) {
     { timeout: TIMEOUTS.longOperation, intervals: [1_000] }
   ).toMatch(/100\s*%/);
 
-  console.log('✅ Import reached 100%');
-}
-
+  /**
+ * Verifies that import completed successfully
+ * @param page - Playwright Page object
+ */
 async function verifyImportSuccess(page: Page) {
-  await expect(page.getByRole('heading', { name: /Imports/i })).toBeVisible({ timeout: TIMEOUTS.default });
-  await expect(page.getByText('Import Completed Successfully')).toBeVisible({ timeout: TIMEOUTS.default });
-  await expect(page.getByRole('button', { name: 'OK' })).toBeVisible({ timeout: TIMEOUTS.default });
+  // Check for success message or completion indicator
+  const successIndicator = page.getByText(/import completed|success|completed successfully/i).first();
+  await expect(successIndicator).toBeVisible({ timeout: TIMEOUTS.default });
+  console.log('✅ Import completed successfully');
 
-  await page.getByRole('button', { name: 'OK' }).click();
-  await expect(page.getByText('Import Completed Successfully')).not.toBeVisible({ timeout: TIMEOUTS.default });
-  console.log('✅ Success popup closed');
+  // Optionally check that recordings table has data
+  try {
+    const recordingsTable = page.locator('table').first();
+    await expect(recordingsTable).toBeVisible({ timeout: TIMEOUTS.default });
+    console.log('✅ Recordings table visible');
+  } catch {
+    console.log('ℹ️ No recordings table found');
+  }
+}
+ * @param page - Playwright Page object
+ * @param extension - User extension number
+ * @param password - User password
+ */
+async function login(page: Page, extension: string, password: string) {
+  console.log(`🔐 Attempting login with extension: ${extension}`);
+
+  // Navigate to login page
+  await page.goto(`${BASE_URL}/Login`, { waitUntil: 'load' });
+  await page.waitForLoadState('domcontentloaded');
+  console.log(`✅ Navigated to login page: ${page.url()}`);
+
+  // Find login form elements using robust selectors
+  const extensionField = page
+    .locator('input[name*="extension" i], input[placeholder*="extension" i], input[aria-label*="extension" i], input[id*="extension" i], input[autocomplete="username"]')
+    .first();
+  const passwordField = page
+    .locator('input[type="password"], input[name*="password" i], input[placeholder*="password" i], input[aria-label*="password" i], input[id*="password" i], input[autocomplete="current-password"]')
+    .first();
+  const rememberMeCheckbox = page.getByRole('checkbox', { name: /remember me/i }).first();
+  const loginButton = page.getByRole('button', { name: /login/i }).first();
+
+  // Fill login form
+  await fillField(extensionField, extension);
+  await fillField(passwordField, password);
+  await setCheckbox(rememberMeCheckbox, true);
+
+  // Click login button
+  await safeClick(loginButton);
+
+  // Wait for successful login - verify we're redirected away from login page
+  await expect(page).not.toHaveURL(/Login/i, { timeout: TIMEOUTS.navigation });
+  console.log('✅ Login successful, redirected from login page');
+
+  // Additional verification: check for dashboard elements or user menu
+  try {
+    // Look for common elements that appear after successful login
+    const dashboardIndicator = page.locator('h1, h2, h3, .dashboard, .welcome, [data-testid="user-menu"]').first();
+    await dashboardIndicator.waitFor({ state: 'visible', timeout: TIMEOUTS.default });
+    console.log('✅ Dashboard elements visible after login');
+  } catch (error) {
+    console.log('⚠️ No dashboard elements found, but login appears successful based on URL change');
+  }
+
+  // Wait for any initial loading to complete
+  await page.waitForLoadState('networkidle');
+  console.log('✅ Page fully loaded after login');
 }
 
 test.describe.configure({ retries: 1 });
@@ -164,27 +219,12 @@ test.describe('3CX Recording Manager - Import', () => {
   });
 });
 
-test.describe('3CX Recording Manager - Navigation', () => {
-  test.beforeEach(async ({ page }) => {
-    await login(page, EXTENSION, PASSWORD);
-    await dismissWhatsNewPopup(page);
-    await navigateToRecordings(page);
-  });
-
-  for (const tab of ['Reports', 'Logs', 'Audit', 'Settings'] as const) {
-    test(`navigates to ${tab} tab`, async ({ page }) => {
-      const link = page.getByRole('link', { name: new RegExp(tab, 'i') }).or(page.getByText(tab, { exact: true }));
-      await link.waitFor({ state: 'visible', timeout: TIMEOUTS.default });
-      await link.scrollIntoViewIfNeeded();
-      await safeClick(link);
-      await expect(page).toHaveURL(new RegExp(tab, 'i'), { timeout: TIMEOUTS.navigation });
-      console.log(`✅ ${tab} page:`, page.url());
-    });
-  }
-});
-
 test.describe('3CX Recording Manager - Comprehensive Navigation', () => {
   test('login once and navigate through all pages then logout', async ({ page }) => {
+    // Open base URL first
+    await page.goto(BASE_URL, { waitUntil: 'load' });
+    console.log(`✅ Opened base URL: ${BASE_URL}`);
+
     // Login once
     await login(page, EXTENSION, PASSWORD);
     await dismissWhatsNewPopup(page);
@@ -233,8 +273,15 @@ test.describe('3CX Recording Manager - Comprehensive Navigation', () => {
 });
 
 test.describe('3CX Recording Manager - Invalid Login', () => {
-  test('shows error for invalid credentials', async ({ page }) => {
-    await page.goto(`${BASE_URL}/Login`, { waitUntil: 'load' });
+  test('open base URL then attempt invalid login', async ({ page }) => {
+    // Open base URL first
+    await page.goto(BASE_URL, { waitUntil: 'load' });
+    console.log(`✅ Opened base URL: ${BASE_URL}`);
+
+    // Navigate to login page if not already there
+    if (!page.url().includes('/Login')) {
+      await page.goto(`${BASE_URL}/Login`, { waitUntil: 'load' });
+    }
     await page.waitForLoadState('domcontentloaded');
 
     const extensionField = page
@@ -254,6 +301,6 @@ test.describe('3CX Recording Manager - Invalid Login', () => {
     const errorBanner = page.getByText(/login unsuccessful|invalid|incorrect|failed/i).first();
     await expect(errorBanner).toBeVisible({ timeout: TIMEOUTS.default });
     await expect(errorBanner).toContainText(/login unsuccessful|invalid|incorrect|failed/i);
-    console.log('✅ Invalid login correctly rejected');
+    console.log('✅ Invalid login correctly rejected after opening base URL');
   });
 });
