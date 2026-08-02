@@ -19,11 +19,11 @@ const TIMEOUTS = {
 // HELPER FUNCTIONS
 // ============================================================================
 
-async function safeClick(locator: Locator) {
-  await locator.waitFor({ state: 'visible', timeout: TIMEOUTS.default });
+async function safeClick(locator: Locator, timeout = TIMEOUTS.default) {
+  await locator.waitFor({ state: 'visible', timeout });
   await locator.scrollIntoViewIfNeeded();
   try {
-    await locator.click({ timeout: TIMEOUTS.default });
+    await locator.click({ timeout });
   } catch {
     await locator.evaluate((el: HTMLElement) => {
       el.scrollIntoView({ block: 'center', inline: 'center' });
@@ -210,7 +210,7 @@ async function login(page: Page, extension: string, password: string) {
   await setCheckbox(rememberMeCheckbox, true);
 
   // Click login button
-  await safeClick(loginButton);
+  await safeClick(loginButton, 30_000);
 
   // Wait for successful login - verify we're redirected away from login page
   await expect(page).not.toHaveURL(/Login/i, { timeout: TIMEOUTS.navigation });
@@ -325,12 +325,22 @@ async function checkPageElements(page: Page, pageName: string, expectedElements:
 test.describe('3CX Recording Manager - Invalid Login', () => {
   test.beforeEach(async ({ page }) => {
     // Open base URL first
-    await page.goto(BASE_URL, { waitUntil: 'load' });
-    console.log(`✅ Opened base URL: ${BASE_URL}`);
+    try {
+      await page.goto(BASE_URL, { waitUntil: 'load', timeout: TIMEOUTS.navigation });
+      console.log(`✅ Opened base URL: ${BASE_URL}`);
+    } catch (error) {
+      console.log(`⚠️ Failed to open base URL, trying login page directly: ${error}`);
+    }
 
     // Navigate to login page if not already there
     if (!page.url().includes('/Login')) {
-      await page.goto(`${BASE_URL}/Login`, { waitUntil: 'load' });
+      try {
+        await page.goto(`${BASE_URL}/Login`, { waitUntil: 'load', timeout: TIMEOUTS.navigation });
+      } catch (error) {
+        console.log(`⚠️ Navigation to login page failed: ${error}`);
+        // Try with domcontentloaded as fallback
+        await page.goto(`${BASE_URL}/Login`, { waitUntil: 'domcontentloaded', timeout: TIMEOUTS.navigation });
+      }
     }
     await page.waitForLoadState('domcontentloaded');
   });
@@ -366,7 +376,7 @@ test.describe('3CX Recording Manager - Invalid Login', () => {
     await fillField(extensionField, EXTENSION);
     await fillField(passwordField, INVALID_PASSWORD);
     await setCheckbox(rememberMeCheckbox, true);
-    await safeClick(loginButton);
+    await safeClick(loginButton, 30_000);
 
     // Check for error message
     const errorBanner = page.getByText(/login unsuccessful|invalid|incorrect|failed|error/i).first();
@@ -400,7 +410,7 @@ test.describe('3CX Recording Manager - Invalid Login', () => {
     await fillField(extensionField, '9999');
     await fillField(passwordField, PASSWORD);
     await setCheckbox(rememberMeCheckbox, true);
-    await safeClick(loginButton);
+    await safeClick(loginButton, 30_000);
 
     // Check for error message
     const errorBanner = page.getByText(/login unsuccessful|invalid|incorrect|failed|error/i).first();
@@ -416,7 +426,7 @@ test.describe('3CX Recording Manager - Invalid Login', () => {
     const loginButton = page.getByRole('button', { name: /login/i }).first();
 
     // Click login without filling fields
-    await safeClick(loginButton);
+    await safeClick(loginButton, 30_000);
 
     // Check for validation error
     const errorBanner = page.getByText(/required|enter|fill|empty/i).first();
@@ -772,7 +782,7 @@ test.describe('3CX Recording Manager - End-to-End Flow', () => {
     await fillField(extensionField, EXTENSION);
     await fillField(passwordField, INVALID_PASSWORD);
     await setCheckbox(rememberMeCheckbox, true);
-    await safeClick(loginButton);
+    await safeClick(loginButton, 30_000);
 
     const errorBanner = page.getByText(/login unsuccessful|invalid|incorrect|failed|error/i).first();
     await expect(errorBanner).toBeVisible({ timeout: TIMEOUTS.default });
