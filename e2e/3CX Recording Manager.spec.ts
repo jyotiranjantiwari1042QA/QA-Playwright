@@ -19,7 +19,7 @@ const TIMEOUTS = {
 // HELPER FUNCTIONS
 // ============================================================================
 
-async function safeClick(locator: Locator, timeout = TIMEOUTS.default) {
+async function safeClick(locator: Locator, timeout: number = TIMEOUTS.default) {
   await locator.waitFor({ state: 'visible', timeout });
   await locator.scrollIntoViewIfNeeded();
   try {
@@ -252,7 +252,7 @@ async function login(page: Page, extension: string, password: string) {
   await setCheckbox(rememberMeCheckbox, true);
 
   // Click login button
-  await safeClick(loginButton, 30_000);
+  await safeClick(loginButton, 30000);
 
   // Wait for successful login - verify we're redirected away from login page
   await expect(page).not.toHaveURL(/Login/i, { timeout: TIMEOUTS.navigation });
@@ -535,20 +535,21 @@ test.describe('3CX Recording Manager - Full Navigation', () => {
     // 2. Import Page
     console.log('\n=== IMPORT PAGE ===');
     await navigateToImport(page);
+    await expect(page).toHaveURL(/Import/, { timeout: TIMEOUTS.navigation });
     await checkPageElements(page, 'Import', [
-      'Import', 'Advanced Settings', 'All extensions', 'Range', 'From last import', 'Start Date', 'End Date'
-    ]);
+  'Import', 'Advanced Settings', 'All extensions', 'Range', 'From last import', 'Start Date', 'End Date'
+]);
 
-    // ADDED: click Advanced Settings to expand the section first
-    await page.click('text=Advanced Settings');
-    await page.waitForSelector('text=Import Restrictions', { state: 'visible' });
+   // ADDED: click Advanced Settings to expand the section first
+   await page.click('text=Advanced Settings');
+   await page.waitForSelector('text=Import Restrictions', { state: 'visible' });
 
-    // ADDED: check the elements that only appear after expanding Advanced Settings
-    await checkPageElements(page, 'Import - Advanced Settings Expanded', [
-      'Import Restrictions', 'All extensions or Range', 'Import starting from last import date', 'Start', 'End', 'Use the recording date embeded in the file name'
-    ]);
+   // ADDED: check the elements that only appear after expanding Advanced Settings
+   await checkPageElements(page, 'Import - Advanced Settings Expanded', [
+  'Import Restrictions', 'All extensions or Range', 'Import starting from last import date', 'Start', 'End', 'Use the recording date embeded in the file name'
+]);
 
-    await page.screenshot({ path: 'test-results/import-page.png', fullPage: true });
+   await page.screenshot({ path: 'test-results/import-page.png', fullPage: true });
 
     // 3. Reports Page
     console.log('\n=== REPORTS PAGE ===');
