@@ -85,7 +85,7 @@ async function navigateToImport(page: Page) {
 }
 
 async function navigateToReports(page: Page) {
-  const reportsLink = page.getByRole('link', { name: /Reports/i }).or(page.getByText('Reports', { exact: true }));
+  const reportsLink = page.getByRole('link', { name: /Reports/i }).or(page.getByText('Reports', { exact: true })).first();
   await reportsLink.waitFor({ state: 'visible', timeout: TIMEOUTS.default });
   await reportsLink.scrollIntoViewIfNeeded();
   await safeClick(reportsLink);
@@ -94,7 +94,7 @@ async function navigateToReports(page: Page) {
 }
 
 async function navigateToLogs(page: Page) {
-  const logsLink = page.getByRole('link', { name: /Logs/i }).or(page.getByText('Logs', { exact: true }));
+  const logsLink = page.getByRole('link', { name: /Logs/i }).or(page.getByText('Logs', { exact: true })).first();
   await logsLink.waitFor({ state: 'visible', timeout: TIMEOUTS.default });
   await logsLink.scrollIntoViewIfNeeded();
   await safeClick(logsLink);
@@ -103,7 +103,7 @@ async function navigateToLogs(page: Page) {
 }
 
 async function navigateToAudit(page: Page) {
-  const auditLink = page.getByRole('link', { name: /Audit/i }).or(page.getByText('Audit', { exact: true }));
+  const auditLink = page.getByRole('link', { name: /Audit/i }).or(page.getByText('Audit', { exact: true })).first();
   await auditLink.waitFor({ state: 'visible', timeout: TIMEOUTS.default });
   await auditLink.scrollIntoViewIfNeeded();
   await safeClick(auditLink);
@@ -112,7 +112,7 @@ async function navigateToAudit(page: Page) {
 }
 
 async function navigateToSettings(page: Page) {
-  const settingsLink = page.getByRole('link', { name: /Settings/i }).or(page.getByText('Settings', { exact: true }));
+  const settingsLink = page.getByRole('link', { name: /Settings/i }).or(page.getByText('Settings', { exact: true })).first();
   await settingsLink.waitFor({ state: 'visible', timeout: TIMEOUTS.default });
   await settingsLink.scrollIntoViewIfNeeded();
   await safeClick(settingsLink);
@@ -273,11 +273,11 @@ async function checkDashboardElements(page: Page) {
   // Check for common dashboard elements
   const elements = [
     { name: 'Recordings link', locator: page.locator('a, button').filter({ hasText: /recordings/i }).first() },
-    { name: 'Import link', locator: page.getByRole('link', { name: /Import/i }) },
-    { name: 'Reports link', locator: page.getByRole('link', { name: /Reports/i }) },
-    { name: 'Logs link', locator: page.getByRole('link', { name: /Logs/i }) },
-    { name: 'Audit link', locator: page.getByRole('link', { name: /Audit/i }) },
-    { name: 'Settings link', locator: page.getByRole('link', { name: /Settings/i }) },
+    { name: 'Import link', locator: page.getByRole('link', { name: /Import/i }).first() },
+    { name: 'Reports link', locator: page.getByRole('link', { name: /Reports/i }).first() },
+    { name: 'Logs link', locator: page.getByRole('link', { name: /Logs/i }).first() },
+    { name: 'Audit link', locator: page.getByRole('link', { name: /Audit/i }).first() },
+    { name: 'Settings link', locator: page.getByRole('link', { name: /Settings/i }).first() },
     { name: 'Logout button', locator: page.locator('button, a').filter({ hasText: /logout/i }).first() },
   ];
 
@@ -552,7 +552,7 @@ test.describe('3CX Recording Manager - Full Navigation', () => {
       // Verify all nav links are still accessible
       for (const checkNav of navElements) {
         const link = page.getByRole('link', { name: new RegExp(checkNav.name, 'i') })
-          .or(page.getByText(checkNav.name, { exact: true }));
+          .or(page.getByText(checkNav.name, { exact: true })).first();
         try {
           await expect(link).toBeVisible({ timeout: 5_000 });
           console.log(`✅ ${checkNav.name} link visible on ${nav.name} page`);
