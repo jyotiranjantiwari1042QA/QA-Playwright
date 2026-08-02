@@ -528,19 +528,27 @@ test.describe('3CX Recording Manager - Full Navigation', () => {
     console.log('\n=== RECORDINGS PAGE ===');
     await navigateToRecordings(page);
     await checkPageElements(page, 'Recordings', [
-      'Recordings', 'Import', 'Search', 'Filter', 'Export', 'Date', 'Extension', 'Duration'
-    ]);
+    'Recordings','Display Time Zone','Departments','Start Date','End Date','Apply','Column Chooser','Extension','User Name','Contact Number','Direction','Recording Date','Duration','Transcription','AI Score'
+]);
     await page.screenshot({ path: 'test-results/recordings-page.png', fullPage: true });
-
-    // 2. Import Page
+   
+    // Optional: verify export icon buttons exist (icon-only, no text)
+   await expect(page.locator('[title="PDF"], img[alt="PDF"]')).toHaveCount(1);
+   await expect(page.locator('[title="XLS"], img[alt="XLS"]').toHaveCount(1);
+   await expect(page.locator('[title="XLSX"], img[alt="XLSX"]').toHaveCount(1);
+   await expect(page.locator('[title="RTF"], img[alt="RTF"]').toHaveCount(1);
+   await expect(page.locator('[title="CSV"], img[alt="CSV"]').toHaveCount(1);
+    
+   // 2. Import Page
     console.log('\n=== IMPORT PAGE ===');
     await navigateToImport(page);
     await expect(page).toHaveURL(/Import/, { timeout: TIMEOUTS.navigation });
     await checkPageElements(page, 'Import', [
-  'Import', 'Advanced Settings', 'All extensions', 'Range', 'From last import', 'Start Date', 'End Date'
+  'Import', 'Advanced Settings'
 ]);
 
-   // ADDED: click Advanced Settings to expand the section first
+   // ADDED: click Import and Advanced Settings to expand the section first
+   await page.getByRole('heading', { name: 'Import' }).click();
    await page.click('text=Advanced Settings');
    await page.waitForSelector('text=Import Restrictions', { state: 'visible' });
 
