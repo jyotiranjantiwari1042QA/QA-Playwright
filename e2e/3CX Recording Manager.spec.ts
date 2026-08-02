@@ -1,5 +1,9 @@
 import { test, expect, type Locator, type Page } from '@playwright/test';
 
+declare const process: {
+  env: Record<string, string | undefined>;
+};
+
 const BASE_URL = process.env.BASE_URL || 'http://13.235.85.154:5500';
 const EXTENSION = process.env.TEST_EXTENSION || '1005';
 const PASSWORD = process.env.TEST_PASSWORD || 'Shivaay@1042';
