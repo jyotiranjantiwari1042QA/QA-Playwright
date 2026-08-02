@@ -538,6 +538,16 @@ test.describe('3CX Recording Manager - Full Navigation', () => {
     await checkPageElements(page, 'Import', [
       'Import', 'Advanced Settings', 'All extensions', 'Range', 'From last import', 'Start Date', 'End Date'
     ]);
+
+    // ADDED: click Advanced Settings to expand the section first
+    await page.click('text=Advanced Settings');
+    await page.waitForSelector('text=Import Restrictions', { state: 'visible' });
+
+    // ADDED: check the elements that only appear after expanding Advanced Settings
+    await checkPageElements(page, 'Import - Advanced Settings Expanded', [
+      'Import Restrictions', 'All extensions or Range', 'Import starting from last import date', 'Start', 'End', 'Use the recording date embeded in the file name'
+    ]);
+
     await page.screenshot({ path: 'test-results/import-page.png', fullPage: true });
 
     // 3. Reports Page
@@ -560,7 +570,7 @@ test.describe('3CX Recording Manager - Full Navigation', () => {
     console.log('\n=== AUDIT PAGE ===');
     await navigateToAudit(page);
     await checkPageElements(page, 'Audit', [
-      'Audit', 'Audit Trail', 'Action', 'User', 'Timestamp', 'Details', 'Filter'
+      'Audit', 'Extension', 'Event', 'Stause', 'Date', 'Time'
     ]);
     await page.screenshot({ path: 'test-results/audit-page.png', fullPage: true });
 
