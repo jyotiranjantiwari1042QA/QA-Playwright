@@ -532,12 +532,15 @@ test.describe('3CX Recording Manager - Full Navigation', () => {
 ]);
     await page.screenshot({ path: 'test-results/recordings-page.png', fullPage: true });
    
-    // Optional: verify export icon buttons exist (icon-only, no text)
-   await expect(page.locator('[title="PDF"], img[alt="PDF"]')).toHaveCount(1);
-   await expect(page.locator('[title="XLS"], img[alt="XLS"]').toHaveCount(1);
-   await expect(page.locator('[title="XLSX"], img[alt="XLSX"]').toHaveCount(1);
-   await expect(page.locator('[title="RTF"], img[alt="RTF"]').toHaveCount(1);
-   await expect(page.locator('[title="CSV"], img[alt="CSV"]').toHaveCount(1);
+    // Verify export icon buttons are visible (PDF, XLS, XLSX, RTF, CSV)
+    const exportFormats = ['PDF', 'XLS', 'XLSX', 'RTF', 'CSV'];
+
+    for (const format of exportFormats) {
+    const icon = page.locator(
+    `img[alt="${format}" i], img[title="${format}" i], [aria-label="${format}" i], button:has-text("${format}"), a:has-text("${format}")`
+    ).first();
+    await expect(icon).toBeVisible();
+   }
     
    // 2. Import Page
     console.log('\n=== IMPORT PAGE ===');
