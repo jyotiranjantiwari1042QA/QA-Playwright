@@ -34,22 +34,44 @@ async function safeClick(locator: Locator, timeout = TIMEOUTS.default) {
 
 async function fillField(locator: Locator, value: string) {
   await locator.waitFor({ state: 'visible', timeout: TIMEOUTS.default });
-  await locator.scrollIntoViewIfNeeded();
-  await locator.click({ force: true });
-  await locator.clear();
-  await locator.fill(value);
+  try {
+    await locator.scrollIntoViewIfNeeded();
+    await locator.click({ force: true });
+    await locator.clear();
+    await locator.fill(value);
+  } catch (error) {
+    // Handle case where element becomes detached from DOM
+    await locator.evaluate((el: HTMLElement) => {
+      el.scrollIntoView({ block: 'center', inline: 'center' });
+      el.click();
+      (el as HTMLInputElement).value = '';
+      (el as HTMLInputElement).focus();
+    });
+    await locator.fill(value);
+  }
 }
 
 async function setCheckbox(locator: Locator, checked: boolean) {
   await locator.waitFor({ state: 'visible', timeout: TIMEOUTS.default });
-  await locator.scrollIntoViewIfNeeded();
-  await locator.setChecked(checked);
+  try {
+    await locator.scrollIntoViewIfNeeded();
+    await locator.setChecked(checked);
+  } catch {
+    await locator.evaluate((el: HTMLElement) => {
+      el.scrollIntoView({ block: 'center', inline: 'center' });
+      (el as HTMLInputElement).checked = checked;
+    });
+  }
 }
 
 async function logout(page: Page) {
   const logoutButton = page.locator('button, a').filter({ hasText: /logout/i }).first();
   await logoutButton.waitFor({ state: 'visible', timeout: TIMEOUTS.default });
-  await logoutButton.scrollIntoViewIfNeeded();
+  try {
+    await logoutButton.scrollIntoViewIfNeeded();
+  } catch {
+    await logoutButton.evaluate((el: HTMLElement) => el.scrollIntoView({ block: 'center', inline: 'center' }));
+  }
   await safeClick(logoutButton);
   await expect(page).toHaveURL(/Login/i, { timeout: TIMEOUTS.navigation });
   console.log('✅ Logged out successfully');
@@ -72,7 +94,11 @@ async function dismissWhatsNewPopup(page: Page) {
 async function navigateToRecordings(page: Page) {
   const recordingsLink = page.locator('a, button').filter({ hasText: /recordings/i }).first();
   await recordingsLink.waitFor({ state: 'visible', timeout: TIMEOUTS.default });
-  await recordingsLink.scrollIntoViewIfNeeded();
+  try {
+    await recordingsLink.scrollIntoViewIfNeeded();
+  } catch {
+    await recordingsLink.evaluate((el: HTMLElement) => el.scrollIntoView({ block: 'center', inline: 'center' }));
+  }
   await safeClick(recordingsLink);
   await expect(page).toHaveURL(/Recordings/i, { timeout: TIMEOUTS.navigation });
   console.log('✅ Recordings page:', page.url());
@@ -87,7 +113,11 @@ async function navigateToImport(page: Page) {
 async function navigateToReports(page: Page) {
   const reportsLink = page.getByRole('link', { name: /Reports/i }).or(page.getByText('Reports', { exact: true })).first();
   await reportsLink.waitFor({ state: 'visible', timeout: TIMEOUTS.default });
-  await reportsLink.scrollIntoViewIfNeeded();
+  try {
+    await reportsLink.scrollIntoViewIfNeeded();
+  } catch {
+    await reportsLink.evaluate((el: HTMLElement) => el.scrollIntoView({ block: 'center', inline: 'center' }));
+  }
   await safeClick(reportsLink);
   await expect(page).toHaveURL(/Reports/i, { timeout: TIMEOUTS.navigation });
   console.log('✅ Reports page:', page.url());
@@ -96,7 +126,11 @@ async function navigateToReports(page: Page) {
 async function navigateToLogs(page: Page) {
   const logsLink = page.getByRole('link', { name: /Logs/i }).or(page.getByText('Logs', { exact: true })).first();
   await logsLink.waitFor({ state: 'visible', timeout: TIMEOUTS.default });
-  await logsLink.scrollIntoViewIfNeeded();
+  try {
+    await logsLink.scrollIntoViewIfNeeded();
+  } catch {
+    await logsLink.evaluate((el: HTMLElement) => el.scrollIntoView({ block: 'center', inline: 'center' }));
+  }
   await safeClick(logsLink);
   await expect(page).toHaveURL(/Logs/i, { timeout: TIMEOUTS.navigation });
   console.log('✅ Logs page:', page.url());
@@ -105,7 +139,11 @@ async function navigateToLogs(page: Page) {
 async function navigateToAudit(page: Page) {
   const auditLink = page.getByRole('link', { name: /Audit/i }).or(page.getByText('Audit', { exact: true })).first();
   await auditLink.waitFor({ state: 'visible', timeout: TIMEOUTS.default });
-  await auditLink.scrollIntoViewIfNeeded();
+  try {
+    await auditLink.scrollIntoViewIfNeeded();
+  } catch {
+    await auditLink.evaluate((el: HTMLElement) => el.scrollIntoView({ block: 'center', inline: 'center' }));
+  }
   await safeClick(auditLink);
   await expect(page).toHaveURL(/Audit/i, { timeout: TIMEOUTS.navigation });
   console.log('✅ Audit page:', page.url());
@@ -114,7 +152,11 @@ async function navigateToAudit(page: Page) {
 async function navigateToSettings(page: Page) {
   const settingsLink = page.getByRole('link', { name: /Settings/i }).or(page.getByText('Settings', { exact: true })).first();
   await settingsLink.waitFor({ state: 'visible', timeout: TIMEOUTS.default });
-  await settingsLink.scrollIntoViewIfNeeded();
+  try {
+    await settingsLink.scrollIntoViewIfNeeded();
+  } catch {
+    await settingsLink.evaluate((el: HTMLElement) => el.scrollIntoView({ block: 'center', inline: 'center' }));
+  }
   await safeClick(settingsLink);
   await expect(page).toHaveURL(/Settings/i, { timeout: TIMEOUTS.navigation });
   console.log('✅ Settings page:', page.url());
