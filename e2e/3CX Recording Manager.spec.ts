@@ -560,14 +560,14 @@ test.describe('3CX Recording Manager - Full Navigation', () => {
     console.log('\n=== RECORDINGS PAGE ===');
     await navigateToRecordings(page);
     await checkPageElements(page, 'Recordings', [
-    'Recordings','Display Time Zone','Departments','Start Date','End Date','Apply','Column Chooser','Extension','User Name','Contact Number','Direction','Recording Date','Duration','Transcription','AI Score'
+    'Recordings','Display Time Zone','Departments','Start Date','End Date','Apply button','Column Chooser button','Extension','User Name','Contact Number','Direction','Recording Date','Duration','Transcription','AI Score','Delete'
 ]);
     await page.screenshot({ path: 'test-results/recordings-page.png', fullPage: true });
    
     // Verify export icon buttons are visible (PDF, XLS, XLSX, RTF, CSV)
-    const exportFormats = ['PDF', 'XLS', 'XLSX', 'RTF', 'CSV'];
+    const exportFormatsRecordings = ['PDF', 'XLS', 'XLSX', 'RTF', 'CSV'];
 
-    for (const format of exportFormats) {
+    for (const format of exportFormatsRecordings) {
       // Use Playwright's getByRole and getByText for reliable element finding
       // CSS :has-text() and [attr="value" i] are not valid CSS selectors
       const icon = page.getByRole('button', { name: new RegExp(format, 'i') })
@@ -602,10 +602,23 @@ test.describe('3CX Recording Manager - Full Navigation', () => {
     // 3. Reports Page
     console.log('\n=== REPORTS PAGE ===');
     await navigateToReports(page);
+    await expect(page).toHaveURL( /Reports/, { timeout: TIMEOUTS.navigation });
     await checkPageElements(page, 'Reports', [
-      'Reports', 'Report', 'Generate', 'Export', 'Date Range', 'Type'
-    ]);
-    await page.screenshot({ path: 'test-results/reports-page.png', fullPage: true });
+  'Reports', 'Generate Reports'
+]); 
+     
+    // ADDED: Generate Reports to expand the section first
+   await page.getByRole('heading', { name: 'Generate Reports' }).click();
+   await page.click('text=Generate Reports');
+   await page.waitForSelector('text=Generate Reports', { state: 'visible' });
+   
+   
+   // ADDED: check the elements that only appear after expanding Generate Reports
+   await checkPageElements(page, 'Generate Reports', [
+  'Generate Reports', 'Department', 'Extension', 'Start Date', 'End Date', 'Report Type', 'Generate Report Button','Generate Report Icon'
+]);
+   
+   await page.screenshot({ path: 'test-results/reports-page.png', fullPage: true });
 
     // 4. Logs Page
     console.log('\n=== LOGS PAGE ===');
@@ -614,6 +627,21 @@ test.describe('3CX Recording Manager - Full Navigation', () => {
       'Logs', 'Log', 'Level', 'Message', 'Timestamp', 'Source', 'Filter'
     ]);
     await page.screenshot({ path: 'test-results/logs-page.png', fullPage: true });
+
+    // Verify export icon buttons are visible (CSV, XLS, XLSX)
+    const exportFormatsLogs = ['CSV', 'XLS', 'XLSX'];
+
+    for (const format of exportFormatsLogs) {
+      // Use Playwright's getByRole and getByText for reliable element finding
+      // CSS :has-text() and [attr="value" i] are not valid CSS selectors
+      const icon = page.getByRole('button', { name: new RegExp(format, 'i') })
+        .or(page.getByRole('link', { name: new RegExp(format, 'i') }))
+        .or(page.locator(`img[alt*="${format}" i], img[title*="${format}" i], [aria-label*="${format}" i]`))
+        .or(page.getByText(new RegExp(format, 'i')).first())
+        .first();
+      await expect(icon).toBeVisible({ timeout: TIMEOUTS.default });
+      console.log(`✅ Export format "${format}" button/icon visible`);
+    }
 
     // 5. Audit Page
     console.log('\n=== AUDIT PAGE ===');
