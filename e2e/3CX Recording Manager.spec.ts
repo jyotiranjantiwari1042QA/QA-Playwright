@@ -536,10 +536,15 @@ test.describe('3CX Recording Manager - Full Navigation', () => {
     const exportFormats = ['PDF', 'XLS', 'XLSX', 'RTF', 'CSV'];
 
     for (const format of exportFormats) {
-      const icon = page.locator(
-        `img[alt="${format}" i], img[title="${format}" i], [aria-label="${format}" i], button:has-text("${format}"), a:has-text("${format}")`
-      ).first();
-      await expect(icon).toBeVisible();
+      // Use Playwright's getByRole and getByText for reliable element finding
+      // CSS :has-text() and [attr="value" i] are not valid CSS selectors
+      const icon = page.getByRole('button', { name: new RegExp(format, 'i') })
+        .or(page.getByRole('link', { name: new RegExp(format, 'i') }))
+        .or(page.locator(`img[alt*="${format}" i], img[title*="${format}" i], [aria-label*="${format}" i]`))
+        .or(page.getByText(new RegExp(format, 'i')).first())
+        .first();
+      await expect(icon).toBeVisible({ timeout: TIMEOUTS.default });
+      console.log(`✅ Export format "${format}" button/icon visible`);
     }
     
    // 2. Import Page
