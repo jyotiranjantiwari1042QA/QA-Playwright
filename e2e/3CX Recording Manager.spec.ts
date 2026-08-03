@@ -536,11 +536,11 @@ test.describe('3CX Recording Manager - Full Navigation', () => {
     const exportFormats = ['PDF', 'XLS', 'XLSX', 'RTF', 'CSV'];
 
     for (const format of exportFormats) {
-    const icon = page.locator(
-    `img[alt="${format}" i], img[title="${format}" i], [aria-label="${format}" i], button:has-text("${format}"), a:has-text("${format}")`
-    ).first();
-    await expect(icon).toBeVisible();
-   }
+      const icon = page.locator(
+        `img[alt="${format}" i], img[title="${format}" i], [aria-label="${format}" i], button:has-text("${format}"), a:has-text("${format}")`
+      ).first();
+      await expect(icon).toBeVisible();
+    }
     
    // 2. Import Page
     console.log('\n=== IMPORT PAGE ===');
@@ -596,8 +596,7 @@ test.describe('3CX Recording Manager - Full Navigation', () => {
 
     console.log('\n✅ All pages navigated and verified successfully!');
   });
-
-  test('verify navigation menu/sidebar elements on each page', async ({ page }) => {
+   test('verify navigation menu/sidebar elements on each page', async ({ page }) => {
     console.log('📋 Test: Verify navigation elements persist across pages');
 
     const navElements = [
