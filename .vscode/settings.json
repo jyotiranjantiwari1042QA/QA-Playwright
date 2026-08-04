@@ -1,4 +1,5 @@
 {
+  "locale": "en-US",
   "playwright.testDir": "./e2e",
   "extensions.ignoreRecommendations": true,
   "workbench.editor.enablePreview": false,
